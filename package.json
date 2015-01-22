@@ -23,5 +23,7 @@
     "tv4": "^1.1.5",
     "tv4-formats": "^0.5.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "chai": "^1.10.0"
+  }
 }

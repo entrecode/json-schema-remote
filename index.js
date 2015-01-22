@@ -5,7 +5,6 @@ var fs         = require('fs')
   , tv4        = require('tv4')
   , tv4formats = require('tv4-formats')
   , schemas    = {
-      resourcedoc: require('./schema/resourcedoc.json')
     }
   ;
 
@@ -14,25 +13,16 @@ for (var schema in schemas) {
   tv4.addSchema(schemas[schema]);
 }
 
-var handlebarsHelpers = require('./lib/handlebarsHelpers');
 
-var resourceTemplate = handlebars.compile(fs.readFileSync(__dirname+'/templates/resource.md.handlebars', {encoding: 'utf8'}));
+var validator = module.exports = {
 
-handlebars = handlebarsHelpers(handlebars);
-
-var hypermediadoc = module.exports = {
-
-  /**
-   * render Markdown from a resource definition using the resource template
-   * @param resource JSON that complies to the resourcedoc JSON Schema
-   * @returns Markdown string
-   */
-  markdownFromResource: function(resource) {
-    // TODO check for JSON schema
-    var validation = tv4.validateResult(resource, schemas.resourcedoc, false, true);
-    if (!validation.valid) {
-      throw validation.error;
+  validate: function(data, schema, callback) {
+    var result = tv4.validateMultiple(data, schema);
+    if (result.valid) {
+      return callback(null, true);
     }
-    return resourceTemplate(resource);
+    var error = new Error('JSON Schema Validation error');
+    error.detail = result.errors;
+    return callback(error, false);
   }
 };
