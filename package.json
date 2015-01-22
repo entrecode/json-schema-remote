@@ -20,8 +20,11 @@
     "validator"
   ],
   "dependencies": {
+    "lodash": "^2.4.1",
+    "request": "^2.51.0",
     "tv4": "^1.1.5",
-    "tv4-formats": "^0.5.1"
+    "tv4-formats": "^0.5.1",
+    "validator": "^3.27.0"
   },
   "devDependencies": {
     "chai": "^1.10.0"

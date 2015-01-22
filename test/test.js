@@ -2,6 +2,8 @@
 'use strict';
 var chai   = require('chai')
   , expect = chai.expect
+  ;
+
 var validator = require('../');
 
 describe('basic check of testing library', function() {
@@ -38,6 +40,29 @@ describe('local schema and data', function() {
     validator.validate(data, schema, function(error, isValid) {
       expect(isValid).to.not.be.true();
       expect(error).to.have.deep.property('detail.0.message', 'Invalid type: boolean (expected string)');
+      done();
+    })
+  });
+});
+
+describe('remote schema and local data', function() {
+  it('valid data', function(done) {
+    var data = {latitude: 48.778611, longitude: 9.179749};
+    var schema = "http://json-schema.org/geo";
+    validator.validate(data, schema, function(error, isValid) {
+      if (error) {
+        done(error);
+      }
+      expect(isValid).to.be.true();
+      done();
+    })
+  });
+  it('invalid data', function(done) {
+    var data = {latitude: 48.778611, longitude: "9.179749"};
+    var schema = "http://json-schema.org/geo";
+    validator.validate(data, schema, function(error, isValid) {
+      expect(isValid).to.not.be.true();
+      expect(error).to.have.deep.property('detail.0.message', 'Invalid type: string (expected number)');
       done();
     })
   });
