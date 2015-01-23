@@ -19,6 +19,7 @@
     "tv4",
     "validator"
   ],
+  "main": "json-schema-remote.js"
   "dependencies": {
     "async": "^0.9.0",
     "lodash": "^2.4.1",

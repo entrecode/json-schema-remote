@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-var fs          = require('fs')
-  , async       = require('async')
-  , handlebars  = require('handlebars')
+var async       = require('async')
   , tv4         = require('tv4')
   , tv4formats  = require('tv4-formats')
   , _           = require('lodash')
@@ -17,6 +15,12 @@ var metaSchema = 'http://json-schema.org/draft-04/schema';
 
 var validator = module.exports = {
 
+  /**
+   * validates a JSON object against a JSON Schema. Both values can either be the actual objects or URLs.
+   * @param {string, object} dataOrURL    A JSON object to validate or a URL to a JSON object.
+   * @param {string, object} schemaOrURL  A JSON schema to validate against or a URL to a JSON schema.
+   * @param {validate~callback} callback  Callback function
+   */
   validate: function(dataOrURL, schemaOrURL, callback) {
     async.parallel({
       data: function(callback) {
@@ -32,8 +36,19 @@ var validator = module.exports = {
       return tv4Validate(loaded.data, loaded.schema, callback);
     });
   }
+  /**
+   * Callback used by validate(dataOrURL, schemaOrURL, callback).
+   * @callback validate~callback
+   * @param {object}  error       Error object. error.errors will be an array with validation errors.
+   * @param {boolean} validated   true if the validation was successful.
+   */
 };
 
+/**
+ * loads a Schema by URL or directly and checks for JSON Schema compliance
+ * @param schema Schema or URL to a schema
+ * @param callback called with (error, schema)
+ */
 function loadSchema(schema, callback) {
   if (validatorJS.isURL(schema)) {
     console.log('loadSchema', schema, '\n');
@@ -71,6 +86,11 @@ function loadSchema(schema, callback) {
   }
 }
 
+/**
+ * loads a JSON object by URL or directly
+ * @param data JSON object or URL to a JSON object
+ * @param callback called with (error, data)
+ */
 function loadData(data, callback) {
   if (validatorJS.isURL(data)) {
     console.log('loadData', data, '\n');
@@ -101,6 +121,12 @@ function loadData(data, callback) {
   }
 }
 
+/**
+ * recursively validates against JSON schema. Loads missing $rel´s
+ * @param {object}    data      JSON object to check
+ * @param {object}    schema    JSON schema to check against
+ * @param {function}  callback  called with (error, result)
+ */
 function tv4Validate(data, schema, callback) {
   var result = tv4.validateMultiple(data, schema);
   if (result.missing.length > 0) {
@@ -130,6 +156,18 @@ function tv4Validate(data, schema, callback) {
   }
 }
 
+/* for usage on command line */
 if (!module.parent) {
-  process.stdout.write('hello!\n');
+  var args = process.argv.slice(-2);
+  validator.validate(args[0], args[1], function(error, valid) {
+    if (error) {
+      process.stderr.write(error.message + '\n');
+      if (error.hasOwnProperty('errors')) {
+        process.stderr.write(JSON.stringify(error.errors));
+      }
+      return process.exit(1);
+    }
+    process.stdout.write('✓ Successfully validated \n')
+    return process.exit(0);
+  });
 }
