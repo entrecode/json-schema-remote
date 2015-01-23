@@ -47,7 +47,7 @@ $ node data schema
 
 `callback` is called when validation is finished. Signature:
 `callback(error, isValid)`
-`error` will contain validation errors or be null if validation succeeded.
+`error` will contain validation errors (`error.errors`) or be null if validation succeeded.
 `isValid` is `true` when validation succeeded, or `false` otherwise.
 
 ## Tests
