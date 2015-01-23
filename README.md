@@ -58,6 +58,8 @@ mocha
 
 ## Changelog
 
+### 0.0.2
+* fix for package.json file
 
 ### 0.0.1
 * initial release
