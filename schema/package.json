@@ -1,0 +1,9 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "title": "package.json-schema",
+  "description": "JSON Schema for node/npm package.json",
+  "required": [
+    "name",
+    "version"
+  ]
+}
