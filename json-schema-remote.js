@@ -16,6 +16,18 @@ var metaSchema = 'http://json-schema.org/draft-04/schema';
 var validator = module.exports = {
 
   /**
+   * Preload a JSON Schema so it will not be necessary to remotely load it when validating
+   * @param {string} [url]  URL/ID of the schema. Can be omitted if schema contains id property
+   * @param {object} schema JSON Schema to add
+   */
+  preload: function(url, schema) {
+    if (schema) {
+      return tv4.addSchema(url, schema);
+    }
+    return tv4.addSchema(url);
+  },
+
+  /**
    * validates a JSON object against a JSON Schema. Both values can either be the actual objects or URLs.
    * @param {string, object} dataOrURL    A JSON object to validate or a URL to a JSON object.
    * @param {string, object} schemaOrURL  A JSON schema to validate against or a URL to a JSON schema.
@@ -43,7 +55,6 @@ var validator = module.exports = {
    * @param {boolean} validated   true if the validation was successful.
    */
 };
-
 /**
  * loads a Schema by URL or directly and checks for JSON Schema compliance
  * @param schema Schema or URL to a schema
@@ -51,7 +62,7 @@ var validator = module.exports = {
  */
 function loadSchema(schema, callback) {
   if (validatorJS.isURL(schema)) {
-    console.log('loadSchema', schema, '\n');
+    console.log('downloading schema ', schema, '\n');
     request(schema, function(error, response, body) {
       if (error) {
         return callback(error);
@@ -93,7 +104,7 @@ function loadSchema(schema, callback) {
  */
 function loadData(data, callback) {
   if (validatorJS.isURL(data)) {
-    console.log('loadData', data, '\n');
+    console.log('downloading data from ', data, '\n');
     request(data, function(error, response, body) {
       if (error) {
         return callback(error);

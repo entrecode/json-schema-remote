@@ -18,6 +18,7 @@ The module can be used from a Node.js script, or directly on command line.
 
 ### Module usage
 
+
 ```js
 var validator = require('json-schema-remote');
 
@@ -27,28 +28,38 @@ validator.validate(data, schema, function(error, isValid) {
   }
 
 });
-
 ```
 
 ### Command line usage
 
 ```sh
-$ node data schema
+$ ./json-schema-remote.js dataURL schemaURL
 ```
-
 
 ## API
 
 ### validator.validate(data, schema, callback)
 
-`data` is either a JSON object or the URL to a JSON object.
+Validate a JSON against a JSON Schema.
 
-`schema` is either a valid JSON schema or the URL to a valid JSON schema.
+* `data` is either a JSON object or the URL to a JSON object.
+* `schema` is either a valid JSON schema or the URL to a valid JSON schema.
+* `callback` is called when validation is finished. Signature:
 
-`callback` is called when validation is finished. Signature:
-`callback(error, isValid)`
-`error` will contain validation errors (`error.errors`) or be null if validation succeeded.
-`isValid` is `true` when validation succeeded, or `false` otherwise.
+    `callback(error, isValid)`
+
+
+    * `error` will contain validation errors (`error.errors`) or be null if validation succeeded.
+    * `isValid` is `true` when validation succeeded, or `false` otherwise.
+
+### validator.preload([url, ]schema)
+
+Preload a JSON Schema so it will not be necessary to remotely load it when validating. Synchronous function.
+
+* `url` can be the id of the schema. May be omitted if `schema` contains the `id` property. Otherwise, it will overwrite it.
+* `schema` the Schema to add as JSON
+
+*Calls tv4.addSchema internally.*
 
 ## Tests
 
