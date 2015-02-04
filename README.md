@@ -1,4 +1,4 @@
-#  [![NPM version][npm-image]][npm-url] [![Dependency Status][daviddm-url]][daviddm-image]
+[![NPM version][npm-image]][npm-url] [![Dependency Status][daviddm-url]][daviddm-image] [![Downloads][downloads-image]][npm-url]
 
 > Node.js module to validate JSON objects against a [JSON Schema](http://json-schema.org/), including remote references ($ref).
 
@@ -66,8 +66,12 @@ Preload a JSON Schema so it will not be necessary to remotely load it when valid
 ```
 mocha
 ```
+Note that the tests need internet access for testing download of remote schemas.
 
 ## Changelog
+
+### 0.1.0
+* added preload function
 
 ### 0.0.2
 * fix for package.json file
@@ -82,5 +86,6 @@ MIT © [entrecode GmbH](https://entrecode.de)
 
 [npm-url]: https://npmjs.org/package/json-schema-remote
 [npm-image]: https://badge.fury.io/js/json-schema-remote.svg
+[downloads-image]: http://img.shields.io/npm/dm/json-schema-remote.svg
 [daviddm-url]: https://david-dm.org/entrecode/json-schema-remote.svg?theme=shields.io
 [daviddm-image]: https://david-dm.org/entrecode/json-schema-remote
