@@ -1,4 +1,4 @@
-#  [![NPM version][npm-image]][npm-url] [![Dependency Status][daviddm-url]][daviddm-image]
+[![NPM version][npm-image]][npm-url] [![Dependency Status][daviddm-url]][daviddm-image] [![Downloads][downloads-image]][npm-url]
 
 > Node.js module to validate JSON objects against a [JSON Schema](http://json-schema.org/), including remote references ($ref).
 
@@ -18,6 +18,7 @@ The module can be used from a Node.js script, or directly on command line.
 
 ### Module usage
 
+
 ```js
 var validator = require('json-schema-remote');
 
@@ -27,36 +28,50 @@ validator.validate(data, schema, function(error, isValid) {
   }
 
 });
-
 ```
 
 ### Command line usage
 
 ```sh
-$ node data schema
+$ ./json-schema-remote.js dataURL schemaURL
 ```
-
 
 ## API
 
 ### validator.validate(data, schema, callback)
 
-`data` is either a JSON object or the URL to a JSON object.
+Validate a JSON against a JSON Schema.
 
-`schema` is either a valid JSON schema or the URL to a valid JSON schema.
+* `data` is either a JSON object or the URL to a JSON object.
+* `schema` is either a valid JSON schema or the URL to a valid JSON schema.
+* `callback` is called when validation is finished. Signature:
 
-`callback` is called when validation is finished. Signature:
-`callback(error, isValid)`
-`error` will contain validation errors (`error.errors`) or be null if validation succeeded.
-`isValid` is `true` when validation succeeded, or `false` otherwise.
+    `callback(error, isValid)`
+
+
+    * `error` will contain validation errors (`error.errors`) or be null if validation succeeded.
+    * `isValid` is `true` when validation succeeded, or `false` otherwise.
+
+### validator.preload([url, ]schema)
+
+Preload a JSON Schema so it will not be necessary to remotely load it when validating. Synchronous function.
+
+* `url` can be the id of the schema. May be omitted if `schema` contains the `id` property. Otherwise, it will overwrite it.
+* `schema` the Schema to add as JSON
+
+*Calls tv4.addSchema internally.*
 
 ## Tests
 
 ```
 mocha
 ```
+Note that the tests need internet access for testing download of remote schemas.
 
 ## Changelog
+
+### 0.1.0
+* added preload function
 
 ### 0.0.2
 * fix for package.json file
@@ -71,5 +86,6 @@ MIT © [entrecode GmbH](https://entrecode.de)
 
 [npm-url]: https://npmjs.org/package/json-schema-remote
 [npm-image]: https://badge.fury.io/js/json-schema-remote.svg
+[downloads-image]: http://img.shields.io/npm/dm/json-schema-remote.svg
 [daviddm-url]: https://david-dm.org/entrecode/json-schema-remote.svg?theme=shields.io
 [daviddm-image]: https://david-dm.org/entrecode/json-schema-remote

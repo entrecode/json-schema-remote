@@ -260,3 +260,43 @@ describe('remote schema and data', function() {
   });
 });
 
+describe('preload remote schema', function() {
+  before(function(done) {
+    validator.preload({
+      $schema: 'http://json-schema.org/draft-04/schema#',
+      id: 'https://nonexistent.tld/some/schema',
+      type: 'string'
+    });
+    done();
+  });
+  it('validate (passing)', function(done) {
+    var data = {x: 'string'};
+    var schema = {
+      type: 'object',
+      properties: {
+        x: { $ref: 'https://nonexistent.tld/some/schema' }
+      }
+    };
+    validator.validate(data, schema, function(error, isValid) {
+      if (error) {
+        done(error);
+      }
+      expect(isValid).to.be.true();
+      done();
+    });
+  });
+  it('validate (not passing)', function(done) {
+    var data = {x: 0};
+    var schema = {
+      type: 'object',
+      properties: {
+        x: { $ref: 'https://nonexistent.tld/some/schema' }
+      }
+    };
+    validator.validate(data, schema, function(error, isValid) {
+      expect(isValid).to.not.be.true();
+      expect(error).to.have.deep.property('errors.0.message', 'Invalid type: number (expected string)');
+      done();
+    });
+  });
+});
