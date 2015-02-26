@@ -1,6 +1,6 @@
 {
   "name": "json-schema-remote",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Node.js module to validate JSON objects against a JSON Schema, including remote references ($ref)",
   "homepage": "https://github.com/entrecode/json-schema-remote",
   "author": {

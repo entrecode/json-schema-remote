@@ -70,6 +70,11 @@ Note that the tests need internet access for testing download of remote schemas.
 
 ## Changelog
 
+### 0.1.1
+* updated dependencies
+* updated tests for chai 2.x
+* updated test for remote schema and data
+
 ### 0.1.0
 * added preload function
 
