@@ -1,7 +1,7 @@
 /*global describe, it */
 'use strict';
-var chai   = require('chai')
-  , expect = chai.expect
+var chai                   = require('chai')
+  , expect                 = chai.expect
   , localPackageJsonSchema = require('../schema/package.json')
   ;
 
@@ -26,7 +26,7 @@ describe('local schema and data', function() {
       if (error) {
         done(error);
       }
-      expect(isValid).to.be.true();
+      expect(isValid).to.be.true;
       done();
     })
   });
@@ -39,7 +39,7 @@ describe('local schema and data', function() {
       }
     };
     validator.validate(data, schema, function(error, isValid) {
-      expect(isValid).to.not.be.true();
+      expect(isValid).to.not.be.true;
       expect(error).to.have.deep.property('errors.0.message', 'Invalid type: boolean (expected string)');
       done();
     })
@@ -54,7 +54,7 @@ describe('remote schema and local data', function() {
       if (error) {
         done(error);
       }
-      expect(isValid).to.be.true();
+      expect(isValid).to.be.true;
       done();
     });
   });
@@ -62,7 +62,7 @@ describe('remote schema and local data', function() {
     var data = {latitude: 48.778611, longitude: "9.179749"};
     var schema = "http://json-schema.org/geo";
     validator.validate(data, schema, function(error, isValid) {
-      expect(isValid).to.not.be.true();
+      expect(isValid).to.not.be.true;
       expect(error).to.have.deep.property('errors.0.message', 'Invalid type: string (expected number)');
       done();
     });
@@ -203,12 +203,12 @@ describe('remote schema and local data', function() {
         }
       }
     };
-      var schema = 'http://hyperschema.org/mediatypes/collection-json';
+    var schema = 'http://hyperschema.org/mediatypes/collection-json';
     validator.validate(data, schema, function(error, isValid) {
       if (error) {
         done(error);
       }
-      expect(isValid).to.be.true();
+      expect(isValid).to.be.true;
       done();
     });
   });
@@ -222,7 +222,7 @@ describe('local schema and remote data', function() {
       if (error) {
         done(error);
       }
-      expect(isValid).to.be.true();
+      expect(isValid).to.be.true;
       done();
     });
   });
@@ -230,7 +230,7 @@ describe('local schema and remote data', function() {
     var data = 'http://hyperschema.org/mediatypes/hal';
     var schema = localPackageJsonSchema;
     validator.validate(data, schema, function(error, isValid) {
-      expect(isValid).to.not.be.true();
+      expect(isValid).to.not.be.true;
       expect(error).to.have.deep.property('errors.0.message', 'Missing required property: name');
       done();
     });
@@ -245,16 +245,16 @@ describe('remote schema and data', function() {
       if (error) {
         done(error);
       }
-      expect(isValid).to.be.true();
+      expect(isValid).to.be.true;
       done();
     });
   });
   it('invalid data', function(done) {
     var data = 'http://hyperschema.org/mediatypes/hal';
-    var schema = 'https://raw.githubusercontent.com/Bartvds/package.json-schema/master/v1/schema.json#definitions/minimal';
+    var schema = 'http://json.schemastore.org/package';
     validator.validate(data, schema, function(error, isValid) {
-      expect(isValid).to.not.be.true();
-      expect(error).to.have.deep.property('errors.0.message', 'Format validation failed (URI expected)');
+      expect(isValid).to.not.be.true;
+      expect(error).to.have.deep.property('errors.0.message', 'Missing required property: name');
       done();
     });
   });
@@ -274,14 +274,14 @@ describe('preload remote schema', function() {
     var schema = {
       type: 'object',
       properties: {
-        x: { $ref: 'https://nonexistent.tld/some/schema' }
+        x: {$ref: 'https://nonexistent.tld/some/schema'}
       }
     };
     validator.validate(data, schema, function(error, isValid) {
       if (error) {
         done(error);
       }
-      expect(isValid).to.be.true();
+      expect(isValid).to.be.true;
       done();
     });
   });
@@ -290,11 +290,11 @@ describe('preload remote schema', function() {
     var schema = {
       type: 'object',
       properties: {
-        x: { $ref: 'https://nonexistent.tld/some/schema' }
+        x: {$ref: 'https://nonexistent.tld/some/schema'}
       }
     };
     validator.validate(data, schema, function(error, isValid) {
-      expect(isValid).to.not.be.true();
+      expect(isValid).to.not.be.true;
       expect(error).to.have.deep.property('errors.0.message', 'Invalid type: number (expected string)');
       done();
     });
