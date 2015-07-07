@@ -21,7 +21,7 @@
   ],
   "main": "json-schema-remote.js",
   "dependencies": {
-    "async": "^0.9.0",
+    "async": "^1.3.0",
     "lodash": "^3.3.1",
     "request": "^2.53.0",
     "tv4": "^1.1.9",
@@ -29,6 +29,6 @@
     "validator": "^3.32.0"
   },
   "devDependencies": {
-    "chai": "^2.1.0"
+    "chai": "^3.0.0"
   }
 }
