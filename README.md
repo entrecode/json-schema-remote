@@ -70,6 +70,9 @@ Note that the tests need internet access for testing download of remote schemas.
 
 ## Changelog
 
+### 0.1.5
+* updated dependencies
+
 ### 0.1.4
 * updated dependencies 
 * added mocha and mocha-bamboo-reporter to dev dependencies
