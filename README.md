@@ -70,6 +70,9 @@ Note that the tests need internet access for testing download of remote schemas.
 
 ## Changelog
 
+### 0.1.7
+* removed deprecation caused by validator.js
+
 ### 0.1.6
 * updated dependencies
 

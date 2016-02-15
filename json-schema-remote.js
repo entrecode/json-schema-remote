@@ -61,7 +61,7 @@ var validator = module.exports = {
  * @param callback called with (error, schema)
  */
 function loadSchema(schema, callback) {
-  if (validatorJS.isURL(schema)) {
+  if (_.isString(schema) && validatorJS.isURL(schema)) {
     console.log('downloading schema ', schema, '\n');
     request(schema, function(error, response, body) {
       if (error) {
@@ -103,7 +103,7 @@ function loadSchema(schema, callback) {
  * @param callback called with (error, data)
  */
 function loadData(data, callback) {
-  if (validatorJS.isURL(data)) {
+  if (_.isString(data) && validatorJS.isURL(data)) {
     console.log('downloading data from ', data, '\n');
     request(data, function(error, response, body) {
       if (error) {
