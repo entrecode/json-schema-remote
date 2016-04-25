@@ -18,17 +18,21 @@ The module can be used from a Node.js script, or directly on command line.
 
 ### Module usage
 
+*Node.js ≥ 4.0.0 is required.*
 
 ```js
-var validator = require('json-schema-remote');
+const validator = require('json-schema-remote');
 
-validator.validate(data, schema, function(error, isValid) {
-  if (error) {
-    // handle error
-  }
-
+validator.validate(data, schema)
+.then(() => {
+  // data is valid!
+})
+.catch((error) => {
+  // handle error
 });
 ```
+
+Optionally, a callback can be provided as third parameter. It will be called with (error, isValid).
 
 ### Command line usage
 
@@ -38,19 +42,21 @@ $ ./json-schema-remote.js dataURL schemaURL
 
 ## API
 
-### validator.validate(data, schema, callback)
+### validator.validate(data, schema[, callback])
 
 Validate a JSON against a JSON Schema.
 
 * `data` is either a JSON object or the URL to a JSON object.
 * `schema` is either a valid JSON schema or the URL to a valid JSON schema.
-* `callback` is called when validation is finished. Signature:
+* `callback` (optional) is called when validation is finished. Signature:
 
     `callback(error, isValid)`
 
 
     * `error` will contain validation errors (`error.errors`) or be null if validation succeeded.
     * `isValid` is `true` when validation succeeded, or `false` otherwise.
+
+If no `callback` is provided, the function returns a Promise.
 
 ### validator.preload([url, ]schema)
 
@@ -69,6 +75,12 @@ mocha
 Note that the tests need internet access for testing download of remote schemas.
 
 ## Changelog
+
+### 1.0.0
+* breaking change: Node.js >= 4.0.0 is required due to the usage of Promises and Arrow functions. Use json-schema-remote@0.1.7 for older node versions.
+* added support for Promises (callbacks still work, too)
+* removed dependency on `async`
+* updated dependencies
 
 ### 0.1.7
 * removed deprecation caused by validator.js
