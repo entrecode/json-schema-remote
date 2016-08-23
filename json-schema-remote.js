@@ -205,6 +205,7 @@ const validator = module.exports = {
   loadSchema,
   tv4Validate,
   validate,
+  setLoggingFunction,
 };
 
 /* for usage on command line */
