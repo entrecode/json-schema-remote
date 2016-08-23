@@ -1,12 +1,15 @@
 {
   "name": "json-schema-remote",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Node.js module to validate JSON objects against a JSON Schema, including remote references ($ref)",
   "homepage": "https://github.com/entrecode/json-schema-remote",
   "author": {
     "name": "Ruben Deyhle",
     "email": "deyhle@entrecode.de",
     "url": "https://entrecode.de"
+  },
+  "scripts": {
+    "test": "mocha -R spec"
   },
   "repository": "entrecode/json-schema-remote",
   "license": "MIT",
@@ -21,15 +24,15 @@
   ],
   "main": "json-schema-remote.js",
   "dependencies": {
-    "lodash": "^4.11.1",
-    "request": "^2.72.0",
+    "lodash": "^4.15.0",
+    "request": "^2.74.0",
     "tv4": "^1.2.7",
     "tv4-formats": "^1.0.2",
-    "validator": "^5.2.0"
+    "validator": "^5.5.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "mocha": "^2.4.5",
-    "mocha-bamboo-reporter": "^1.1.0"
+    "mocha": "^3.0.2",
+    "mocha-bamboo-reporter": "^1.1.1"
   }
 }
