@@ -67,6 +67,11 @@ Preload a JSON Schema so it will not be necessary to remotely load it when valid
 
 *Calls tv4.addSchema internally.*
 
+### validator.setLoggingFunction(fn)
+
+Set a custom Logging function. Will take `console.log` else. It is logged when data is loaded over the network.
+Throws an error if `fn` is no function.
+
 ## Tests
 
 ```
@@ -75,6 +80,9 @@ mocha
 Note that the tests need internet access for testing download of remote schemas.
 
 ## Changelog
+
+### 1.1.0
+* added function `setLoggingFunction(fn)` to add a custom logger function instead of `console.log`
 
 ### 1.0.0
 * breaking change: Node.js >= 4.0.0 is required due to the usage of Promises and Arrow functions. Use json-schema-remote@0.1.7 for older node versions.

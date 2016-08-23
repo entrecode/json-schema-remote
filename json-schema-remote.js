@@ -8,10 +8,18 @@ const validatorJS = require('validator');
 const request = require('request');
 
 const schemaSchema = require('./schema/schema.json');
+let log = console.log;
 
 tv4.addFormat(tv4formats);
 tv4.addSchema(schemaSchema);
 const metaSchema = 'http://json-schema.org/draft-04/schema';
+
+function setLoggingFunction(fn) {
+  if (typeof fn !== 'function') {
+    throw new Error('logging function is no function!');
+  }
+  log = fn;
+}
 
 /**
  * Preload a JSON Schema so it will not be necessary to remotely load it when validating
@@ -47,7 +55,7 @@ function loadData(data, callback) {
   return Promise.resolve()
   .then(() => {
     if (_.isString(data) && validatorJS.isURL(data)) {
-      console.log('downloading data from ', data, '\n');
+      log('downloading data from ', data, '\n');
       return makeRequest(data)
       .catch((error) => {
         if (error.hasOwnProperty('response') && error.response.statusCode !== 200) {
@@ -91,7 +99,7 @@ function loadSchema(schema, callback) {
   return Promise.resolve()
   .then(() => {
     if (_.isString(schema) && validatorJS.isURL(schema)) {
-      console.log('downloading schema ', schema, '\n');
+      log('downloading schema ', schema, '\n');
       return makeRequest(schema)
       .catch((error) => {
         if (error.hasOwnProperty('response') && error.response.statusCode !== 200) {
