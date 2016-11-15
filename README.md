@@ -81,6 +81,9 @@ Note that the tests need internet access for testing download of remote schemas.
 
 ## Changelog
 
+### 1.1.2
+* updated dependencies
+
 ### 1.1.1
 * made the feature from 1.1.0 actually work
 
