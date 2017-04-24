@@ -24,11 +24,12 @@
   ],
   "main": "json-schema-remote.js",
   "dependencies": {
-    "lodash": "^4.17.1",
+    "lodash.isobject": "^3.0.2",
+    "lodash.isstring": "^4.0.1",
     "request": "^2.78.0",
     "tv4": "^1.2.7",
     "tv4-formats": "^2.2.1",
-    "validator": "^6.1.0"
+    "validator": "^7.0npm.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",

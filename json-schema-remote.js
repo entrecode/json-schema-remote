@@ -2,9 +2,12 @@
 
 const tv4 = require('tv4');
 const tv4formats = require('tv4-formats');
-const _ = require('lodash');
 const validatorJS = require('validator');
 const request = require('request');
+const _ = {
+  isString: require('lodash.isstring'),
+  isObject: require('lodash.isobject'),
+};
 
 const schemaSchema = require('./schema/schema.json');
 let log = console.log;
@@ -174,9 +177,11 @@ function tv4Validate(data, schema, callback) {
 }
 
 /**
- * validates a JSON object against a JSON Schema. Both values can either be the actual objects or URLs.
+ * validates a JSON object against a JSON Schema. Both values can either be the actual objects or
+ * URLs.
  * @param {string, object} dataOrURL    A JSON object to validate or a URL to a JSON object.
- * @param {string, object} schemaOrURL  A JSON schema to validate against or a URL to a JSON schema.
+ * @param {string, object} schemaOrURL  A JSON schema to validate against or a URL to a JSON
+ *   schema.
  * @param {validate~callback} [callback]  Callback function
  */
 function validate(dataOrURL, schemaOrURL, callback) {
