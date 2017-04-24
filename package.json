@@ -29,7 +29,7 @@
     "request": "^2.78.0",
     "tv4": "^1.2.7",
     "tv4-formats": "^2.2.1",
-    "validator": "^7.0npm.0"
+    "validator": "^7.0.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
