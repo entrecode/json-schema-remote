@@ -37,7 +37,10 @@ Optionally, a callback can be provided as third parameter. It will be called wit
 ### Command line usage
 
 ```sh
-$ ./json-schema-remote.js dataURL schemaURL
+# when installed globally
+json-schema-remote dataURL schemaURL
+# when installed locally
+./bin/json-schema-remote.js dataURL schemaURL
 ```
 
 ## API

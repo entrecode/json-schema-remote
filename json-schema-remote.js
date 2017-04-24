@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 'use strict';
 
 const tv4 = require('tv4');
@@ -199,7 +198,7 @@ function validate(dataOrURL, schemaOrURL, callback) {
   });
 }
 
-const validator = module.exports = {
+module.exports = {
   preload,
   loadData,
   loadSchema,
@@ -207,20 +206,3 @@ const validator = module.exports = {
   validate,
   setLoggingFunction,
 };
-
-/* for usage on command line */
-if (!module.parent) {
-  const args = process.argv.slice(-2);
-  validator.validate(args[0], args[1])
-  .then(() => {
-    process.stdout.write('✓ Successfully validated \n')
-    return process.exit(0);
-  })
-  .catch((error) => {
-    process.stderr.write(error.message + '\n');
-    if (error.hasOwnProperty('errors')) {
-      process.stderr.write(JSON.stringify(error.errors));
-    }
-    return process.exit(1);
-  });
-}
