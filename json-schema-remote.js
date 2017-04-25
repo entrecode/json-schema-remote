@@ -1,21 +1,17 @@
-'use strict';
-
 const tv4 = require('tv4');
 const tv4formats = require('tv4-formats');
 const validatorJS = require('validator');
 const request = require('request');
-const _ = {
-  isString: require('lodash.isstring'),
-  isObject: require('lodash.isobject'),
-};
-
 const schemaSchema = require('./schema/schema.json');
-let log = console.log;
+const isString = require('lodash.isstring');
+const isObject = require('lodash.isobject');
+
+const metaSchema = 'http://json-schema.org/draft-04/schema';
 
 tv4.addFormat(tv4formats);
 tv4.addSchema(schemaSchema);
-const metaSchema = 'http://json-schema.org/draft-04/schema';
 
+let log = console.log;
 function setLoggingFunction(fn) {
   if (typeof fn !== 'function') {
     throw new Error('logging function is no function!');
@@ -53,10 +49,9 @@ function makeRequest(url) {
  * @param [callback] called with (error, data)
  */
 function loadData(data, callback) {
-
   return Promise.resolve()
   .then(() => {
-    if (_.isString(data) && validatorJS.isURL(data)) {
+    if (isString(data) && validatorJS.isURL(data)) {
       log('downloading data from ', data, '\n');
       return makeRequest(data)
       .catch((error) => {
@@ -66,13 +61,13 @@ function loadData(data, callback) {
         return Promise.reject(error);
       })
       .then((body) => {
-        if (!_.isObject(body)) {
+        if (!isObject(body)) {
           return Promise.reject(new Error('No valid JSON Object'));
         }
         return body;
       });
     } else {
-      if (!_.isObject(data)) {
+      if (!isObject(data)) {
         return Promise.reject(new Error('No valid JSON Object'));
       }
       return data;
@@ -100,7 +95,11 @@ function loadData(data, callback) {
 function loadSchema(schema, callback) {
   return Promise.resolve()
   .then(() => {
-    if (_.isString(schema) && validatorJS.isURL(schema)) {
+    if (isString(schema) && validatorJS.isURL(schema)) {
+      const cachedSchema = tv4.getSchema(schema);
+      if (cachedSchema) {
+        return cachedSchema;
+      }
       log('downloading schema ', schema, '\n');
       return makeRequest(schema)
       .catch((error) => {
@@ -111,10 +110,13 @@ function loadSchema(schema, callback) {
       })
       .then(parsedBody =>
         tv4Validate(parsedBody, metaSchema)
-        .then(isValid => parsedBody)
+        .then(isValid => {
+          tv4.addSchema(schema, parsedBody);
+          return parsedBody;
+        })
       );
     } else {
-      if (!_.isObject(schema)) {
+      if (!isObject(schema)) {
         return Promise.reject(new Error('No valid JSON Schema'));
       }
       // check if valid schema
@@ -150,7 +152,7 @@ function tv4Validate(data, schema, callback) {
       // Missing Schemas
       return Promise.all(result.missing.map(
         schemaID => loadSchema(schemaID)
-        .then(schema => tv4.addSchema(schemaID, schema))
+        .then(loadedSchema => tv4.addSchema(schemaID, loadedSchema))
       ))
       .then(() => tv4Validate(data, schema));
     } else if (result.errors.length > 0) { // Invalid
@@ -186,9 +188,7 @@ function tv4Validate(data, schema, callback) {
  */
 function validate(dataOrURL, schemaOrURL, callback) {
   return Promise.all([loadData(dataOrURL), loadSchema(schemaOrURL)])
-  .then((loaded) => {
-    return tv4Validate(loaded[0], loaded[1]);
-  })
+  .then(loaded => tv4Validate(loaded[0], loaded[1]))
   .then((isValid) => {
     if (callback) {
       return callback(null, isValid);
