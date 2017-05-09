@@ -92,6 +92,19 @@ Note that the tests need internet access for testing download of remote schemas.
 
 ## Changelog
 
+### 1.2.0
+- adds `getSchema(url)`
+
+### 1.1.6
+- version 3.0.0 tv4-formats with fixed typescript usage
+
+### 1.1.4 - 1.1.5
+- bugfixes
+
+### 1.1.3
+- removed lodash
+- split shell usage into single file
+
 ### 1.1.2
 * updated dependencies
 
