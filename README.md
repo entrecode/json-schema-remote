@@ -70,6 +70,14 @@ Preload a JSON Schema so it will not be necessary to remotely load it when valid
 
 *Calls tv4.addSchema internally.*
 
+### validator.getSchema(url)
+
+Get a JSON Schema from tv4 cache.
+
+* `url` URL/ID of the JSON Schema
+
+*Calls tv4.getSchema internally.*
+
 ### validator.setLoggingFunction(fn)
 
 Set a custom Logging function. Will take `console.log` else. It is logged when data is loaded over the network.

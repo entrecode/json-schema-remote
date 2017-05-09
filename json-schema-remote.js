@@ -31,6 +31,15 @@ function preload(url, schema) {
   return tv4.addSchema(url);
 }
 
+/**
+ * Get a JSON Schema from tv4 cache.
+ * @param {string} url URL/ID of the schema
+ * @returns {object} Returns the schema from the cache.
+ */
+function getSchema(url) {
+  return tv4.getSchema(url);
+}
+
 function makeRequest(url) {
   return new Promise((resolve, reject) => {
     request.get(url, (error, response, body) => {
@@ -205,6 +214,7 @@ function validate(dataOrURL, schemaOrURL, callback) {
 
 module.exports = {
   preload,
+  getSchema,
   loadData,
   loadSchema,
   tv4Validate,

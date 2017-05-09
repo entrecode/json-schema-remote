@@ -293,6 +293,22 @@ describe('promise style', () => {
       });
     });
   });
+
+  describe('get schema from cache', () => {
+    before(() => validator.preload({
+      $schema: 'http://json-schema.org/draft-04/schema#',
+      id: 'https://nonexistent.tld/some/schema',
+      type: 'string',
+    }));
+    it('load schema from cache', () => {
+      const schema = validator.getSchema('https://nonexistent.tld/some/schema');
+      expect(schema).to.have.property('type', 'string');
+    });
+    it('no cached version', () => {
+      const schema = validator.getSchema('https://nonexistent.tld/no/schema');
+      expect(schema).to.be.undefined;
+    });
+  });
 });
 
 describe('callback style', () => {
