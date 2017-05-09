@@ -70,6 +70,14 @@ Preload a JSON Schema so it will not be necessary to remotely load it when valid
 
 *Calls tv4.addSchema internally.*
 
+### validator.getSchema(url)
+
+Get a JSON Schema from tv4 cache.
+
+* `url` URL/ID of the JSON Schema
+
+*Calls tv4.getSchema internally.*
+
 ### validator.setLoggingFunction(fn)
 
 Set a custom Logging function. Will take `console.log` else. It is logged when data is loaded over the network.
@@ -83,6 +91,19 @@ mocha
 Note that the tests need internet access for testing download of remote schemas.
 
 ## Changelog
+
+### 1.2.0
+- adds `getSchema(url)`
+
+### 1.1.6
+- version 3.0.0 tv4-formats with fixed typescript usage
+
+### 1.1.4 - 1.1.5
+- bugfixes
+
+### 1.1.3
+- removed lodash
+- split shell usage into single file
 
 ### 1.1.2
 * updated dependencies
