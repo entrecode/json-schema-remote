@@ -92,6 +92,9 @@ Note that the tests need internet access for testing download of remote schemas.
 
 ## Changelog
 
+### 1.2.1
+- updated Dependencies, fixed Tests for Chai 4
+
 ### 1.2.0
 - adds `getSchema(url)`
 
