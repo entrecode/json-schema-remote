@@ -39,7 +39,7 @@ describe('promise style', () => {
         expect(isValid).to.not.be.true;
       })
       .catch((error) => {
-        expect(error).to.have.deep.property('errors.0.message', 'Invalid type: boolean (expected string)');
+        expect(error).to.have.nested.property('errors.0.message', 'Invalid type: boolean (expected string)');
         return Promise.resolve();
       });
     });
@@ -62,7 +62,7 @@ describe('promise style', () => {
         expect(isValid).to.not.be.true;
       })
       .catch((error) => {
-        expect(error).to.have.deep.property('errors.0.message', 'Invalid type: string (expected number)');
+        expect(error).to.have.nested.property('errors.0.message', 'Invalid type: string (expected number)');
         return Promise.resolve();
       });
     });
@@ -227,7 +227,7 @@ describe('promise style', () => {
         expect(isValid).to.not.be.true;
       })
       .catch((error) => {
-        expect(error).to.have.deep.property('errors.0.message', 'Missing required property: name');
+        expect(error).to.have.nested.property('errors.0.message', 'Missing required property: name');
         return Promise.resolve();
       });
     });
@@ -250,7 +250,7 @@ describe('promise style', () => {
         expect(isValid).to.not.be.true;
       })
       .catch((error) => {
-        expect(error).to.have.deep.property('errors.0.message', 'Missing required property: name');
+        expect(error).to.have.nested.property('errors.0.message', 'Missing required property: name');
         return Promise.resolve();
       });
     });
@@ -288,7 +288,7 @@ describe('promise style', () => {
         expect(isValid).to.not.be.true;
       })
       .catch((error) => {
-        expect(error).to.have.deep.property('errors.0.message', 'Invalid type: number (expected string)');
+        expect(error).to.have.nested.property('errors.0.message', 'Invalid type: number (expected string)');
         return Promise.resolve();
       });
     });
@@ -339,7 +339,7 @@ describe('callback style', () => {
       };
       validator.validate(data, schema, (error, isValid) => {
         expect(isValid).to.not.be.true;
-        expect(error).to.have.deep.property('errors.0.message', 'Invalid type: boolean (expected string)');
+        expect(error).to.have.nested.property('errors.0.message', 'Invalid type: boolean (expected string)');
         done();
       });
     });
@@ -362,7 +362,7 @@ describe('callback style', () => {
       const schema = 'http://json-schema.org/geo';
       validator.validate(data, schema, (error, isValid) => {
         expect(isValid).to.not.be.true;
-        expect(error).to.have.deep.property('errors.0.message', 'Invalid type: string (expected number)');
+        expect(error).to.have.nested.property('errors.0.message', 'Invalid type: string (expected number)');
         done();
       });
     });
@@ -530,7 +530,7 @@ describe('callback style', () => {
       const schema = localPackageJsonSchema;
       validator.validate(data, schema, (error, isValid) => {
         expect(isValid).to.not.be.true;
-        expect(error).to.have.deep.property('errors.0.message', 'Missing required property: name');
+        expect(error).to.have.nested.property('errors.0.message', 'Missing required property: name');
         done();
       });
     });
@@ -553,7 +553,7 @@ describe('callback style', () => {
       const schema = 'http://json.schemastore.org/package';
       validator.validate(data, schema, (error, isValid) => {
         expect(isValid).to.not.be.true;
-        expect(error).to.have.deep.property('errors.0.message', 'Missing required property: name');
+        expect(error).to.have.nested.property('errors.0.message', 'Missing required property: name');
         done();
       });
     });
@@ -594,7 +594,7 @@ describe('callback style', () => {
       };
       validator.validate(data, schema, (error, isValid) => {
         expect(isValid).to.not.be.true;
-        expect(error).to.have.deep.property('errors.0.message', 'Invalid type: number (expected string)');
+        expect(error).to.have.nested.property('errors.0.message', 'Invalid type: number (expected string)');
         done();
       });
     });
