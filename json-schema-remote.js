@@ -1,7 +1,9 @@
 const tv4 = require('tv4');
 const tv4formats = require('tv4-formats');
 const validatorJS = require('validator');
-const request = require('request');
+const superagent = require('superagent');
+const http = require('http');
+const https = require('https');
 const schemaSchema = require('./schema/schema.json');
 const isString = require('lodash.isstring');
 const isObject = require('lodash.isobject');
@@ -41,15 +43,11 @@ function getSchema(url) {
 }
 
 function makeRequest(url) {
-  return new Promise((resolve, reject) => {
-    request.get(url, (error, response, body) => {
-      if (error) {
-        return reject(error);
-      }
-      return resolve(body);
-    });
-  })
-  .then(body => Promise.resolve(JSON.parse(body)));
+  return superagent.get(url)
+  // This buffer(…) logic should parse all content types as json. Or fail violently.
+  .buffer(true).parse(superagent.parse.image)
+  .then(res => res.body.toString())
+  .then(res => JSON.parse(res));
 }
 
 /**
