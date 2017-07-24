@@ -1,6 +1,7 @@
 const tv4 = require('tv4');
 const tv4formats = require('tv4-formats');
 const validatorJS = require('validator');
+const superagent = require('superagent');
 const http = require('http');
 const https = require('https');
 const schemaSchema = require('./schema/schema.json');
@@ -42,36 +43,11 @@ function getSchema(url) {
 }
 
 function makeRequest(url) {
-  return new Promise((resolve, reject) => {
-    const lib = url.startsWith('https') ? https : http;
-    lib.get(url, (res) => {
-      let error;
-      if (res.statusCode < 200 || res.statusCode >= 300) {
-        error = new Error('Request Failed.\n' +
-          `Status Code: ${res.statusCode}`);
-      }
-      if (error) {
-        res.resume();
-        return reject(error);
-      }
-
-      res.setEncoding('utf8');
-      let rawData = '';
-      res.on('data', (chunk) => {
-        rawData += chunk;
-      });
-      res.on('end', () => {
-        try {
-          const parsedData = JSON.parse(rawData);
-          return resolve(parsedData);
-        } catch (e) {
-          return reject(e);
-        }
-      });
-    }).on('error', (e) => {
-      return reject(e);
-    });
-  });
+  return superagent.get(url)
+  // This buffer(…) logic should parse all content types as json. Or fail violently.
+  .buffer(true).parse(superagent.parse.image)
+  .then(res => res.body.toString())
+  .then(res => JSON.parse(res));
 }
 
 /**
