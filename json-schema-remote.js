@@ -1,7 +1,8 @@
 const tv4 = require('tv4');
 const tv4formats = require('tv4-formats');
 const validatorJS = require('validator');
-const request = require('request');
+const http = require('http');
+const https = require('https');
 const schemaSchema = require('./schema/schema.json');
 const isString = require('lodash.isstring');
 const isObject = require('lodash.isobject');
@@ -42,14 +43,35 @@ function getSchema(url) {
 
 function makeRequest(url) {
   return new Promise((resolve, reject) => {
-    request.get(url, (error, response, body) => {
+    const lib = url.startsWith('https') ? https : http;
+    lib.get(url, (res) => {
+      let error;
+      if (res.statusCode < 200 || res.statusCode >= 300) {
+        error = new Error('Request Failed.\n' +
+          `Status Code: ${res.statusCode}`);
+      }
       if (error) {
+        res.resume();
         return reject(error);
       }
-      return resolve(body);
+
+      res.setEncoding('utf8');
+      let rawData = '';
+      res.on('data', (chunk) => {
+        rawData += chunk;
+      });
+      res.on('end', () => {
+        try {
+          const parsedData = JSON.parse(rawData);
+          return resolve(parsedData);
+        } catch (e) {
+          return reject(e);
+        }
+      });
+    }).on('error', (e) => {
+      return reject(e);
     });
-  })
-  .then(body => Promise.resolve(JSON.parse(body)));
+  });
 }
 
 /**

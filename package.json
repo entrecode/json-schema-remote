@@ -26,7 +26,6 @@
   "dependencies": {
     "lodash.isobject": "^3.0.2",
     "lodash.isstring": "^4.0.1",
-    "request": "^2.78.0",
     "tv4": "^1.2.7",
     "tv4-formats": "^3.0.0",
     "validator": "^8.0.0"
