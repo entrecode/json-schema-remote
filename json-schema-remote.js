@@ -14,6 +14,7 @@ tv4.addFormat(tv4formats);
 tv4.addSchema(schemaSchema);
 
 let log = console.log;
+
 function setLoggingFunction(fn) {
   if (typeof fn !== 'function') {
     throw new Error('logging function is no function!');
@@ -58,7 +59,7 @@ function makeRequest(url) {
 function loadData(data, callback) {
   return Promise.resolve()
   .then(() => {
-    if (isString(data) && validatorJS.isURL(data, { 'require_tld': false })) {
+    if (isString(data) && validatorJS.isURL(data, { require_tld: false })) {
       log('downloading data from ', data, '\n');
       return makeRequest(data)
       .catch((error) => {
@@ -102,7 +103,7 @@ function loadData(data, callback) {
 function loadSchema(schema, callback) {
   return Promise.resolve()
   .then(() => {
-    if (isString(schema) && validatorJS.isURL(schema)) {
+    if (isString(schema) && validatorJS.isURL(schema, { require_tld: false })) {
       const cachedSchema = tv4.getSchema(schema);
       if (cachedSchema) {
         return cachedSchema;
