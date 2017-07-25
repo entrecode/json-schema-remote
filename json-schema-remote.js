@@ -58,7 +58,7 @@ function makeRequest(url) {
 function loadData(data, callback) {
   return Promise.resolve()
   .then(() => {
-    if (isString(data) && validatorJS.isURL(data)) {
+    if (isString(data) && validatorJS.isURL(data, { 'require_tld': false })) {
       log('downloading data from ', data, '\n');
       return makeRequest(data)
       .catch((error) => {
