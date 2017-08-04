@@ -92,6 +92,9 @@ Note that the tests need internet access for testing download of remote schemas.
 
 ## Changelog
 
+### 1.2.5
+- fixed bufferhandling in browser with superagent
+
 ### 1.2.1
 - updated Dependencies, fixed Tests for Chai 4
 
