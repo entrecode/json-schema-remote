@@ -2,8 +2,6 @@ const tv4 = require('tv4');
 const tv4formats = require('tv4-formats');
 const validatorJS = require('validator');
 const superagent = require('superagent');
-const http = require('http');
-const https = require('https');
 const schemaSchema = require('./schema/schema.json');
 const isString = require('lodash.isstring');
 const isObject = require('lodash.isobject');
@@ -47,8 +45,13 @@ function makeRequest(url) {
   return superagent.get(url)
   // This buffer(…) logic should parse all content types as json. Or fail violently.
   .buffer(true).parse(superagent.parse.image)
-  .then(res => res.body.toString())
-  .then(res => JSON.parse(res));
+  .then((res) => {
+    try {
+      return JSON.parse(res.body.toString());
+    } catch (err) {
+      return res.body;
+    }
+  });
 }
 
 /**
@@ -64,7 +67,7 @@ function loadData(data, callback) {
       return makeRequest(data)
       .catch((error) => {
         if (error.hasOwnProperty('response') && error.response.statusCode !== 200) {
-          return Promise.reject(new Error('Could not load remote data.'))
+          return Promise.reject(new Error('Could not load remote data.'));
         }
         return Promise.reject(error);
       })
@@ -74,12 +77,11 @@ function loadData(data, callback) {
         }
         return body;
       });
-    } else {
-      if (!isObject(data)) {
-        return Promise.reject(new Error('No valid JSON Object'));
-      }
-      return data;
     }
+    if (!isObject(data)) {
+      return Promise.reject(new Error('No valid JSON Object'));
+    }
+    return data;
   })
   .then((result) => {
     if (callback) {
@@ -112,25 +114,24 @@ function loadSchema(schema, callback) {
       return makeRequest(schema)
       .catch((error) => {
         if (error.hasOwnProperty('response') && error.response.statusCode !== 200) {
-          return Promise.reject(new Error('Could not load schema.'))
+          return Promise.reject(new Error('Could not load schema.'));
         }
         return Promise.reject(error);
       })
       .then(parsedBody =>
         tv4Validate(parsedBody, metaSchema)
-        .then(isValid => {
+        .then(() => {
           tv4.addSchema(schema, parsedBody);
           return parsedBody;
         })
       );
-    } else {
-      if (!isObject(schema)) {
-        return Promise.reject(new Error('No valid JSON Schema'));
-      }
-      // check if valid schema
-      return tv4Validate(schema, metaSchema)
-      .then(isValid => schema);
     }
+    if (!isObject(schema)) {
+      return Promise.reject(new Error('No valid JSON Schema'));
+    }
+    // check if valid schema
+    return tv4Validate(schema, metaSchema)
+    .then(() => schema);
   })
   .then((result) => {
     if (callback) {
@@ -155,7 +156,7 @@ function loadSchema(schema, callback) {
 function tv4Validate(data, schema, callback) {
   return Promise.resolve()
   .then(() => {
-    var result = tv4.validateMultiple(data, schema);
+    const result = tv4.validateMultiple(data, schema);
     if (result.missing.length > 0) {
       // Missing Schemas
       return Promise.all(result.missing.map(
@@ -167,10 +168,9 @@ function tv4Validate(data, schema, callback) {
       const error = new Error(schema === metaSchema ? 'No valid JSON Schema' : 'JSON Schema Validation error');
       error.errors = result.errors;
       return Promise.reject(error);
-    } else {
-      // Valid
-      return true;
     }
+    // Valid
+    return true;
   })
   .then((isValid) => {
     if (callback) {
