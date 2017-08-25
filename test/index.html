@@ -1,0 +1,51 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+<form>
+    <!--
+    <input id="schema" name="schema" placeholder="schema">
+    <input id="data" name="data" placeholder="data">
+    -->
+    <input type="submit" value="Submit now!"/>
+</form>
+
+<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="../dist/json-schema-remote.js "></script>
+<script>
+  $(document).ready(function () {
+    $('form').submit(function (e) {
+      e.preventDefault();
+      /*
+      let schema;
+      let data;
+      try {
+        schema = JSON.parse($('#schema').val());
+      } catch (e) {
+        schema = $('schema')[0];
+      }
+      try {
+        data = JSON.parse($('#data').val());
+      } catch (e) {
+        data = $('data')[0];
+      }
+      */
+
+      validator.validate('https://raw.githubusercontent.com/geraintluff/tv4/master/package.json', 'http://entrecode.de/schema/hal.json')
+      .then((valid) => {
+        if (valid) {
+          alert('is valid');
+        } else {
+          alert('is not valid');
+        }
+      })
+      .catch(console.error);
+
+      e.preventDefault();
+    });
+  });
+</script>
+</body>
+</html>
