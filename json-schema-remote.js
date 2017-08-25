@@ -42,9 +42,18 @@ function getSchema(url) {
 }
 
 function makeRequest(url) {
-  return superagent.get(url)
+  const req = superagent.get(url);
+  const isBrowser = typeof process === 'undefined' || typeof process.browser !== 'undefined';
+  if (isBrowser) {
+    return req.then(res => {
+      if (res.body) {
+        return res.body;
+      }
+      return JSON.parse(res.text);
+    });
+  }
   // This buffer(…) logic should parse all content types as json. Or fail violently.
-  .buffer(true).parse(superagent.parse.image)
+  return req.buffer(true).parse(superagent.parse.image)
   .then((res) => {
     try {
       return JSON.parse(res.body.toString());
@@ -113,6 +122,7 @@ function loadSchema(schema, callback) {
       log('downloading schema ', schema, '\n');
       return makeRequest(schema)
       .catch((error) => {
+        schema;
         if (error.hasOwnProperty('response') && error.response.statusCode !== 200) {
           return Promise.reject(new Error('Could not load schema.'));
         }
