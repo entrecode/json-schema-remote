@@ -222,11 +222,12 @@ function validate(dataOrURL, schemaOrURL, callback) {
 }
 
 module.exports = {
+  validate,
   preload,
   getSchema,
+  setLoggingFunction,
+
   loadData,
   loadSchema,
   tv4Validate,
-  validate,
-  setLoggingFunction,
 };

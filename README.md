@@ -92,7 +92,10 @@ Note that the tests need internet access for testing download of remote schemas.
 
 ## Changelog
 
-### 1.2.5
+### 1.3.0
+- adds typescript typings
+
+### 1.2.5 / 1.2.6
 - fixed bufferhandling in browser with superagent
 
 ### 1.2.1
