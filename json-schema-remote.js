@@ -13,6 +13,8 @@ tv4.addSchema(schemaSchema);
 
 let log = console.log;
 
+const requestCache = new Map();
+
 function setLoggingFunction(fn) {
   if (typeof fn !== 'function') {
     throw new Error('logging function is no function!');
@@ -42,24 +44,41 @@ function getSchema(url) {
 }
 
 function makeRequest(url) {
-  const req = superagent.get(url);
-  const isBrowser = typeof process === 'undefined' || typeof process.browser !== 'undefined';
-  if (isBrowser) {
-    return req.then(res => {
-      if (res.body) {
+  return Promise.resolve()
+  .then(() => {
+    if (requestCache.has(url)) {
+      return requestCache.get(url);
+    }
+    log('downloading from ', url, '\n');
+
+    const req = superagent.get(url);
+    const isBrowser = typeof process === 'undefined' || typeof process.browser !== 'undefined';
+    if (isBrowser) {
+      return req.then((res) => {
+        if (res.body) {
+          return res.body;
+        }
+        return JSON.parse(res.text);
+      });
+    }
+    // This buffer(…) logic should parse all content types as json. Or fail violently.
+    const promise = req.buffer(true).parse(superagent.parse.image)
+    .then((res) => {
+      try {
+        return JSON.parse(res.body.toString());
+      } catch (err) {
         return res.body;
       }
-      return JSON.parse(res.text);
+    })
+    .then((res) => {
+      if (requestCache.has(url)) {
+        requestCache.delete(url);
+      }
+      return res;
     });
-  }
-  // This buffer(…) logic should parse all content types as json. Or fail violently.
-  return req.buffer(true).parse(superagent.parse.image)
-  .then((res) => {
-    try {
-      return JSON.parse(res.body.toString());
-    } catch (err) {
-      return res.body;
-    }
+
+    requestCache.set(url, promise);
+    return promise;
   });
 }
 
@@ -72,7 +91,6 @@ function loadData(data, callback) {
   return Promise.resolve()
   .then(() => {
     if (isString(data) && validatorJS.isURL(data, { require_tld: false })) {
-      log('downloading data from ', data, '\n');
       return makeRequest(data)
       .catch((error) => {
         if (error.hasOwnProperty('response') && error.response.statusCode !== 200) {
@@ -119,7 +137,6 @@ function loadSchema(schema, callback) {
       if (cachedSchema) {
         return cachedSchema;
       }
-      log('downloading schema ', schema, '\n');
       return makeRequest(schema)
       .catch((error) => {
         schema;
@@ -133,8 +150,7 @@ function loadSchema(schema, callback) {
         .then(() => {
           tv4.addSchema(schema, parsedBody);
           return parsedBody;
-        })
-      );
+        }));
     }
     if (!isObject(schema)) {
       return Promise.reject(new Error('No valid JSON Schema'));
@@ -171,8 +187,7 @@ function tv4Validate(data, schema, callback) {
       // Missing Schemas
       return Promise.all(result.missing.map(
         schemaID => loadSchema(schemaID)
-        .then(loadedSchema => tv4.addSchema(schemaID, loadedSchema))
-      ))
+        .then(loadedSchema => tv4.addSchema(schemaID, loadedSchema))))
       .then(() => tv4Validate(data, schema));
     } else if (result.errors.length > 0) { // Invalid
       const error = new Error(schema === metaSchema ? 'No valid JSON Schema' : 'JSON Schema Validation error');
