@@ -242,6 +242,19 @@ describe('promise style', () => {
         expect(isValid).to.be.true;
       });
     });
+    it('paralell requests', () => {
+      const data = 'https://raw.githubusercontent.com/geraintluff/tv4/master/package.json';
+      const schema = 'https://gitlab.com/mjkaye/hal-json-schema/raw/master/hal-schema.json';
+      const promise = () => validator.validate(data, schema)
+      return Promise.all([
+        promise(),
+        promise(),
+      ])
+      .then((results) => {
+        expect(results[0]).to.be.true;
+        expect(results[1]).to.be.true;
+      });
+    });
     it('invalid data', () => {
       const data = 'http://hyperschema.org/mediatypes/hal';
       const schema = 'http://json.schemastore.org/package';
