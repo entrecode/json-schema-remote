@@ -139,7 +139,6 @@ function loadSchema(schema, callback) {
       }
       return makeRequest(schema)
       .catch((error) => {
-        schema;
         if (error.hasOwnProperty('response') && error.response.statusCode !== 200) {
           return Promise.reject(new Error('Could not load schema.'));
         }
@@ -147,10 +146,7 @@ function loadSchema(schema, callback) {
       })
       .then(parsedBody =>
         tv4Validate(parsedBody, metaSchema)
-        .then(() => {
-          tv4.addSchema(schema, parsedBody);
-          return parsedBody;
-        }));
+        .then(() => parsedBody));
     }
     if (!isObject(schema)) {
       return Promise.reject(new Error('No valid JSON Schema'));
@@ -160,6 +156,8 @@ function loadSchema(schema, callback) {
     .then(() => schema);
   })
   .then((result) => {
+    tv4.addSchema(result.id, result);
+
     if (callback) {
       return callback(null, result);
     }
@@ -185,9 +183,13 @@ function tv4Validate(data, schema, callback) {
     const result = tv4.validateMultiple(data, schema);
     if (result.missing.length > 0) {
       // Missing Schemas
-      return Promise.all(result.missing.map(
-        schemaID => loadSchema(schemaID)
-        .then(loadedSchema => tv4.addSchema(schemaID, loadedSchema))))
+      return Promise.all(result.missing.map((schemaID) => {
+        if (tv4.getSchema(schemaID)) {
+          throw new Error('json-schema-remote: tv4 is missing schema it already has in cache. possible faulty schema.');
+        }
+        return loadSchema(schemaID)
+        .then(loadedSchema => tv4.addSchema(schemaID, loadedSchema));
+      }))
       .then(() => tv4Validate(data, schema));
     } else if (result.errors.length > 0) { // Invalid
       const error = new Error(schema === metaSchema ? 'No valid JSON Schema' : 'JSON Schema Validation error');

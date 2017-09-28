@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 
 const chai = require('chai');
+
 const expect = chai.expect;
 const localPackageJsonSchema = require('../schema/package.json');
 const validator = require('../');
@@ -40,6 +41,34 @@ describe('promise style', () => {
       })
       .catch((error) => {
         expect(error).to.have.nested.property('errors.0.message', 'Invalid type: boolean (expected string)');
+        return Promise.resolve();
+      });
+    });
+    it('definition path invalid', () => {
+      const data = {
+        b: {},
+      };
+      const schema = {
+        $schema: 'http://json-schema.org/draft-04/schema#',
+        id: 'https://example.com/schema',
+        type: 'object',
+        properties: {
+          b: {
+            $ref: '#/definitions/plainError',
+            definitions: {
+              plainError: {
+                type: 'object',
+              },
+            },
+          },
+        },
+      };
+      return validator.validate(data, schema)
+      .then((isValid) => {
+        expect(isValid).to.not.be.true;
+      })
+      .catch((error) => {
+        expect(error).to.have.property('message', 'json-schema-remote: tv4 is missing schema it already has in cache. possible faulty schema.');
         return Promise.resolve();
       });
     });
@@ -245,7 +274,7 @@ describe('promise style', () => {
     it('paralell requests', () => {
       const data = 'https://raw.githubusercontent.com/geraintluff/tv4/master/package.json';
       const schema = 'https://gitlab.com/mjkaye/hal-json-schema/raw/master/hal-schema.json';
-      const promise = () => validator.validate(data, schema)
+      const promise = () => validator.validate(data, schema);
       return Promise.all([
         promise(),
         promise(),
