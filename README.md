@@ -92,6 +92,16 @@ Note that the tests need internet access for testing download of remote schemas.
 
 ## Changelog
 
+### 1.3.3
+- allow string only "jsons"
+- improved require_tld logic in requests
+
+### 1.3.2
+- fixed infinity loop when schema has broken refs
+
+### 1.3.1
+- add request cache
+
 ### 1.3.0
 - adds typescript typings
 
