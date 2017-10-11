@@ -90,7 +90,8 @@ function makeRequest(url) {
 function loadData(data, callback) {
   return Promise.resolve()
   .then(() => {
-    if (isString(data) && validatorJS.isURL(data, { require_tld: false })) {
+    const tld = !isString(data) || data.indexOf('localhost') === -1;
+    if (isString(data) && validatorJS.isURL(data, { require_tld: tld })) {
       return makeRequest(data)
       .catch((error) => {
         if (error.hasOwnProperty('response') && error.response.statusCode !== 200) {
@@ -104,9 +105,6 @@ function loadData(data, callback) {
         }
         return body;
       });
-    }
-    if (!isObject(data)) {
-      return Promise.reject(new Error('No valid JSON Object'));
     }
     return data;
   })
@@ -132,7 +130,8 @@ function loadData(data, callback) {
 function loadSchema(schema, callback) {
   return Promise.resolve()
   .then(() => {
-    if (isString(schema) && validatorJS.isURL(schema, { require_tld: false })) {
+    const tld = !isString(schema) || schema.indexOf('localhost') === -1;
+    if (isString(schema) && validatorJS.isURL(schema, { require_tld: tld })) {
       const cachedSchema = tv4.getSchema(schema);
       if (cachedSchema) {
         return cachedSchema;
