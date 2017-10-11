@@ -72,6 +72,15 @@ describe('promise style', () => {
         return Promise.resolve();
       });
     });
+    it('string data', () => {
+      const data = 'hello';
+      const schema = { type: 'string' };
+
+      return validator.validate(data, schema)
+      .then((isValid) => {
+        expect(isValid).to.be.true;
+      });
+    });
   });
 
   describe('remote schema and local data', () => {
