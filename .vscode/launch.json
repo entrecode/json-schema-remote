@@ -15,6 +15,7 @@
         "10000",
         "-R",
         "dot",
+        "--exit",
         "test/**/*.js"
       ],
       "cwd": "${workspaceRoot}",
