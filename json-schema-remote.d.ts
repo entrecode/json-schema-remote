@@ -14,6 +14,8 @@ declare module 'json-schema-remote' {
 
   export function preload(url: string, schema: any): void;
 
+  function dropSchemas(): void;
+  
   function getSchema(url: string): any;
 
   export function setLoggingFunction(fn: (...any: Array<string>) => void): void
