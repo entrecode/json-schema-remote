@@ -1,0 +1,28 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Mocha tests",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceRoot}/node_modules/.bin/_mocha",
+      "stopOnEntry": false,
+      "args": [
+        "-t",
+        "10000",
+        "-R",
+        "dot",
+        "--exit",
+        "test/**/*.js"
+      ],
+      "cwd": "${workspaceRoot}",
+      "env": {
+        "NODE_ENV": "testing"
+      },
+      "internalConsoleOptions": "openOnSessionStart"
+    }
+  ]
+}

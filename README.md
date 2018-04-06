@@ -92,6 +92,9 @@ Note that the tests need internet access for testing download of remote schemas.
 
 ## Changelog
 
+### 1.3.4
+- add option to remove all schemas from cache
+
 ### 1.3.3
 - allow string only "jsons"
 - improved require_tld logic in requests

@@ -35,6 +35,14 @@ function preload(url, schema) {
 }
 
 /**
+ * Drop all schemas from tv4 cache.
+ * @returns {undefined}
+ */
+function dropSchemas() {
+  tv4.dropSchemas();
+}
+
+/**
  * Get a JSON Schema from tv4 cache.
  * @param {string} url URL/ID of the schema
  * @returns {object} Returns the schema from the cache.
@@ -240,6 +248,7 @@ function validate(dataOrURL, schemaOrURL, callback) {
 module.exports = {
   validate,
   preload,
+  dropSchemas,
   getSchema,
   setLoggingFunction,
 
