@@ -301,7 +301,7 @@ describe('promise style', () => {
         expect(isValid).to.not.be.true;
       })
       .catch((error) => {
-        expect(error).to.have.nested.property('errors.0.message', 'Missing required property: name');
+        expect(error).to.have.nested.property('errors.0.message', 'Data does not match any schemas from "anyOf"');
         return Promise.resolve();
       });
     });
@@ -604,7 +604,7 @@ describe('callback style', () => {
       const schema = 'http://json.schemastore.org/package';
       validator.validate(data, schema, (error, isValid) => {
         expect(isValid).to.not.be.true;
-        expect(error).to.have.nested.property('errors.0.message', 'Missing required property: name');
+        expect(error).to.have.nested.property('errors.0.message', 'Data does not match any schemas from "anyOf"');
         done();
       });
     });

@@ -28,16 +28,16 @@
   "dependencies": {
     "lodash.isobject": "^3.0.2",
     "lodash.isstring": "^4.0.1",
-    "superagent": "^3.6.3",
+    "superagent": "^3.8.2",
     "tv4": "^1.3.0",
-    "tv4-formats": "^3.0.2",
+    "tv4-formats": "^3.0.3",
     "validator": "^8.2.0"
   },
   "devDependencies": {
     "chai": "^4.1.2",
-    "mocha": "^3.5.3",
+    "mocha": "^5.0.5",
     "mocha-bamboo-reporter": "^1.1.1",
-    "webpack": "^3.6.0"
+    "webpack": "^4.5.0"
   },
   "bin": {
     "json-schema-remote": "./bin/json-schema-remote.js"
