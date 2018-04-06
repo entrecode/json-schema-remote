@@ -23,9 +23,9 @@ describe('promise style', () => {
         },
       };
       return validator.validate(data, schema)
-      .then((isValid) => {
-        expect(isValid).to.be.true;
-      });
+        .then((isValid) => {
+          expect(isValid).to.be.true;
+        });
     });
     it('invalid data', () => {
       const data = { intKey: 1, stringKey: false };
@@ -36,13 +36,13 @@ describe('promise style', () => {
         },
       };
       return validator.validate(data, schema)
-      .then((isValid) => {
-        expect(isValid).to.not.be.true;
-      })
-      .catch((error) => {
-        expect(error).to.have.nested.property('errors.0.message', 'Invalid type: boolean (expected string)');
-        return Promise.resolve();
-      });
+        .then((isValid) => {
+          expect(isValid).to.not.be.true;
+        })
+        .catch((error) => {
+          expect(error).to.have.nested.property('errors.0.message', 'Invalid type: boolean (expected string)');
+          return Promise.resolve();
+        });
     });
     it('definition path invalid', () => {
       const data = {
@@ -64,22 +64,22 @@ describe('promise style', () => {
         },
       };
       return validator.validate(data, schema)
-      .then((isValid) => {
-        expect(isValid).to.not.be.true;
-      })
-      .catch((error) => {
-        expect(error).to.have.property('message', 'json-schema-remote: tv4 is missing schema it already has in cache. possible faulty schema.');
-        return Promise.resolve();
-      });
+        .then((isValid) => {
+          expect(isValid).to.not.be.true;
+        })
+        .catch((error) => {
+          expect(error).to.have.property('message', 'json-schema-remote: tv4 is missing schema it already has in cache. possible faulty schema.');
+          return Promise.resolve();
+        });
     });
     it('string data', () => {
       const data = 'hello';
       const schema = { type: 'string' };
 
       return validator.validate(data, schema)
-      .then((isValid) => {
-        expect(isValid).to.be.true;
-      });
+        .then((isValid) => {
+          expect(isValid).to.be.true;
+        });
     });
   });
 
@@ -88,21 +88,21 @@ describe('promise style', () => {
       const data = { latitude: 48.778611, longitude: 9.179749 };
       const schema = 'http://json-schema.org/geo';
       return validator.validate(data, schema)
-      .then((isValid) => {
-        expect(isValid).to.be.true;
-      });
+        .then((isValid) => {
+          expect(isValid).to.be.true;
+        });
     });
     it('invalid data', () => {
       const data = { latitude: 48.778611, longitude: '9.179749' };
       const schema = 'http://json-schema.org/geo';
       return validator.validate(data, schema)
-      .then((isValid) => {
-        expect(isValid).to.not.be.true;
-      })
-      .catch((error) => {
-        expect(error).to.have.nested.property('errors.0.message', 'Invalid type: string (expected number)');
-        return Promise.resolve();
-      });
+        .then((isValid) => {
+          expect(isValid).to.not.be.true;
+        })
+        .catch((error) => {
+          expect(error).to.have.nested.property('errors.0.message', 'Invalid type: string (expected number)');
+          return Promise.resolve();
+        });
     });
     it('remote schema with remote $refs', () => {
       const data = {
@@ -242,9 +242,9 @@ describe('promise style', () => {
       };
       const schema = 'http://hyperschema.org/mediatypes/collection-json';
       return validator.validate(data, schema)
-      .then((isValid) => {
-        expect(isValid).to.be.true;
-      });
+        .then((isValid) => {
+          expect(isValid).to.be.true;
+        });
     });
   });
 
@@ -253,21 +253,21 @@ describe('promise style', () => {
       const data = 'https://raw.githubusercontent.com/geraintluff/tv4/master/package.json';
       const schema = localPackageJsonSchema;
       return validator.validate(data, schema)
-      .then((isValid) => {
-        expect(isValid).to.be.true;
-      });
+        .then((isValid) => {
+          expect(isValid).to.be.true;
+        });
     });
     it('invalid data', () => {
       const data = 'http://hyperschema.org/mediatypes/hal';
       const schema = localPackageJsonSchema;
       return validator.validate(data, schema)
-      .then((isValid) => {
-        expect(isValid).to.not.be.true;
-      })
-      .catch((error) => {
-        expect(error).to.have.nested.property('errors.0.message', 'Missing required property: name');
-        return Promise.resolve();
-      });
+        .then((isValid) => {
+          expect(isValid).to.not.be.true;
+        })
+        .catch((error) => {
+          expect(error).to.have.nested.property('errors.0.message', 'Missing required property: name');
+          return Promise.resolve();
+        });
     });
   });
 
@@ -276,9 +276,9 @@ describe('promise style', () => {
       const data = 'https://raw.githubusercontent.com/geraintluff/tv4/master/package.json';
       const schema = 'https://gitlab.com/mjkaye/hal-json-schema/raw/master/hal-schema.json';
       return validator.validate(data, schema)
-      .then((isValid) => {
-        expect(isValid).to.be.true;
-      });
+        .then((isValid) => {
+          expect(isValid).to.be.true;
+        });
     });
     it('paralell requests', () => {
       const data = 'https://raw.githubusercontent.com/geraintluff/tv4/master/package.json';
@@ -288,22 +288,22 @@ describe('promise style', () => {
         promise(),
         promise(),
       ])
-      .then((results) => {
-        expect(results[0]).to.be.true;
-        expect(results[1]).to.be.true;
-      });
+        .then((results) => {
+          expect(results[0]).to.be.true;
+          expect(results[1]).to.be.true;
+        });
     });
     it('invalid data', () => {
       const data = 'http://hyperschema.org/mediatypes/hal';
       const schema = 'http://json.schemastore.org/package';
       return validator.validate(data, schema)
-      .then((isValid) => {
-        expect(isValid).to.not.be.true;
-      })
-      .catch((error) => {
-        expect(error).to.have.nested.property('errors.0.message', 'Data does not match any schemas from "anyOf"');
-        return Promise.resolve();
-      });
+        .then((isValid) => {
+          expect(isValid).to.not.be.true;
+        })
+        .catch((error) => {
+          expect(error).to.have.nested.property('errors.0.message', 'Data does not match any schemas from "anyOf"');
+          return Promise.resolve();
+        });
     });
   });
 
@@ -322,9 +322,9 @@ describe('promise style', () => {
         },
       };
       return validator.validate(data, schema)
-      .then((isValid) => {
-        expect(isValid).to.be.true;
-      });
+        .then((isValid) => {
+          expect(isValid).to.be.true;
+        });
     });
     it('validate (not passing)', () => {
       const data = { x: 0 };
@@ -335,13 +335,13 @@ describe('promise style', () => {
         },
       };
       return validator.validate(data, schema)
-      .then((isValid) => {
-        expect(isValid).to.not.be.true;
-      })
-      .catch((error) => {
-        expect(error).to.have.nested.property('errors.0.message', 'Invalid type: number (expected string)');
-        return Promise.resolve();
-      });
+        .then((isValid) => {
+          expect(isValid).to.not.be.true;
+        })
+        .catch((error) => {
+          expect(error).to.have.nested.property('errors.0.message', 'Invalid type: number (expected string)');
+          return Promise.resolve();
+        });
     });
   });
 
@@ -360,6 +360,20 @@ describe('promise style', () => {
       expect(schema).to.be.undefined;
     });
   });
+});
+
+after(() => {
+  // this is not idea, should be a proper test but it must run as last test
+  validator.preload({
+    $schema: 'http://json-schema.org/draft-04/schema#',
+    id: 'https://nonexistent.tld/some/schema',
+    type: 'string',
+  });
+  const shouldExist = validator.getSchema('https://nonexistent.tld/some/schema');
+  expect(shouldExist).to.have.property('type', 'string');
+  validator.dropSchemas();
+  const shouldNotExist = validator.getSchema('https://nonexistent.tld/some/schema');
+  expect(shouldNotExist).to.be.undefined;
 });
 
 describe('callback style', () => {
