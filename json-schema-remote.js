@@ -38,6 +38,7 @@ function preload(url, schema) {
  */
 function dropSchemas() {
   tv4.dropSchemas();
+  tv4.addSchema(schemaSchema);
 }
 
 /**
