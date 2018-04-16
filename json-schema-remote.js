@@ -6,8 +6,6 @@ const schemaSchema = require('./schema/schema.json');
 const isString = require('lodash.isstring');
 const isObject = require('lodash.isobject');
 
-const metaSchema = 'http://json-schema.org/draft-04/schema';
-
 tv4.addFormat(tv4formats);
 tv4.addSchema(schemaSchema);
 
@@ -53,41 +51,41 @@ function getSchema(url) {
 
 function makeRequest(url) {
   return Promise.resolve()
-  .then(() => {
-    if (requestCache.has(url)) {
-      return requestCache.get(url);
-    }
-    log('downloading from ', url, '\n');
-
-    const req = superagent.get(url);
-    const isBrowser = typeof process === 'undefined' || typeof process.browser !== 'undefined';
-    if (isBrowser) {
-      return req.then((res) => {
-        if (res.body) {
-          return res.body;
-        }
-        return JSON.parse(res.text);
-      });
-    }
-    // This buffer(…) logic should parse all content types as json. Or fail violently.
-    const promise = req.buffer(true).parse(superagent.parse.image)
-    .then((res) => {
-      try {
-        return JSON.parse(res.body.toString());
-      } catch (err) {
-        return res.body;
-      }
-    })
-    .then((res) => {
+    .then(() => {
       if (requestCache.has(url)) {
-        requestCache.delete(url);
+        return requestCache.get(url);
       }
-      return res;
-    });
+      log('downloading from ', url, '\n');
 
-    requestCache.set(url, promise);
-    return promise;
-  });
+      const req = superagent.get(url);
+      const isBrowser = typeof process === 'undefined' || typeof process.browser !== 'undefined';
+      if (isBrowser) {
+        return req.then((res) => {
+          if (res.body) {
+            return res.body;
+          }
+          return JSON.parse(res.text);
+        });
+      }
+      // This buffer(…) logic should parse all content types as json. Or fail violently.
+      const promise = req.buffer(true).parse(superagent.parse.image)
+        .then((res) => {
+          try {
+            return JSON.parse(res.body.toString());
+          } catch (err) {
+            return res.body;
+          }
+        })
+        .then((res) => {
+          if (requestCache.has(url)) {
+            requestCache.delete(url);
+          }
+          return res;
+        });
+
+      requestCache.set(url, promise);
+      return promise;
+    });
 }
 
 /**
@@ -97,37 +95,37 @@ function makeRequest(url) {
  */
 function loadData(data, callback) {
   return Promise.resolve()
-  .then(() => {
-    const tld = !isString(data) || data.indexOf('localhost') === -1;
-    if (isString(data) && validatorJS.isURL(data, { require_tld: tld })) {
-      return makeRequest(data)
-      .catch((error) => {
-        if (error.hasOwnProperty('response') && error.response.statusCode !== 200) {
-          return Promise.reject(new Error('Could not load remote data.'));
-        }
-        return Promise.reject(error);
-      })
-      .then((body) => {
-        if (!isObject(body)) {
-          return Promise.reject(new Error('No valid JSON Object'));
-        }
-        return body;
-      });
-    }
-    return data;
-  })
-  .then((result) => {
-    if (callback) {
-      return callback(null, result);
-    }
-    return result;
-  })
-  .catch((error) => {
-    if (callback) {
-      return callback(error);
-    }
-    return Promise.reject(error);
-  });
+    .then(() => {
+      const tld = !isString(data) || data.indexOf('localhost') === -1;
+      if (isString(data) && validatorJS.isURL(data, { require_tld: tld })) {
+        return makeRequest(data)
+          .catch((error) => {
+            if (error.hasOwnProperty('response') && error.response.statusCode !== 200) {
+              return Promise.reject(new Error('Could not load remote data.'));
+            }
+            return Promise.reject(error);
+          })
+          .then((body) => {
+            if (!isObject(body)) {
+              return Promise.reject(new Error('No valid JSON Object'));
+            }
+            return body;
+          });
+      }
+      return data;
+    })
+    .then((result) => {
+      if (callback) {
+        return callback(null, result);
+      }
+      return result;
+    })
+    .catch((error) => {
+      if (callback) {
+        return callback(error);
+      }
+      return Promise.reject(error);
+    });
 }
 
 /**
@@ -137,45 +135,45 @@ function loadData(data, callback) {
  */
 function loadSchema(schema, callback) {
   return Promise.resolve()
-  .then(() => {
-    const tld = !isString(schema) || schema.indexOf('localhost') === -1;
-    if (isString(schema) && validatorJS.isURL(schema, { require_tld: tld })) {
-      const cachedSchema = tv4.getSchema(schema);
-      if (cachedSchema) {
-        return cachedSchema;
-      }
-      return makeRequest(schema)
-      .catch((error) => {
-        if (error.hasOwnProperty('response') && error.response.statusCode !== 200) {
-          return Promise.reject(new Error('Could not load schema.'));
+    .then(() => {
+      const tld = !isString(schema) || schema.indexOf('localhost') === -1;
+      if (isString(schema) && validatorJS.isURL(schema, { require_tld: tld })) {
+        const cachedSchema = tv4.getSchema(schema);
+        if (cachedSchema) {
+          return cachedSchema;
         }
-        return Promise.reject(error);
-      })
-      .then(parsedBody =>
-        tv4Validate(parsedBody, metaSchema)
-        .then(() => parsedBody));
-    }
-    if (!isObject(schema)) {
-      return Promise.reject(new Error('No valid JSON Schema'));
-    }
-    // check if valid schema
-    return tv4Validate(schema, metaSchema)
-    .then(() => schema);
-  })
-  .then((result) => {
-    tv4.addSchema(result.id, result);
+        return makeRequest(schema)
+          .catch((error) => {
+            if (error.hasOwnProperty('response') && error.response.statusCode !== 200) {
+              return Promise.reject(new Error('Could not load schema.'));
+            }
+            return Promise.reject(error);
+          })
+          .then(parsedBody =>
+            tv4Validate(parsedBody, schemaSchema)
+              .then(() => parsedBody));
+      }
+      if (!isObject(schema)) {
+        return Promise.reject(new Error('No valid JSON Schema'));
+      }
+      // check if valid schema
+      return tv4Validate(schema, schemaSchema)
+        .then(() => schema);
+    })
+    .then((result) => {
+      tv4.addSchema(result.id, result);
 
-    if (callback) {
-      return callback(null, result);
-    }
-    return result;
-  })
-  .catch((error) => {
-    if (callback) {
-      return callback(error);
-    }
-    return Promise.reject(error);
-  });
+      if (callback) {
+        return callback(null, result);
+      }
+      return result;
+    })
+    .catch((error) => {
+      if (callback) {
+        return callback(error);
+      }
+      return Promise.reject(error);
+    });
 }
 
 /**
@@ -186,38 +184,38 @@ function loadSchema(schema, callback) {
  */
 function tv4Validate(data, schema, callback) {
   return Promise.resolve()
-  .then(() => {
-    const result = tv4.validateMultiple(data, schema);
-    if (result.missing.length > 0) {
-      // Missing Schemas
-      return Promise.all(result.missing.map((schemaID) => {
-        if (tv4.getSchema(schemaID)) {
-          throw new Error('json-schema-remote: tv4 is missing schema it already has in cache. possible faulty schema.');
-        }
-        return loadSchema(schemaID)
-        .then(loadedSchema => tv4.addSchema(schemaID, loadedSchema));
-      }))
-      .then(() => tv4Validate(data, schema));
-    } else if (result.errors.length > 0) { // Invalid
-      const error = new Error(schema === metaSchema ? 'No valid JSON Schema' : 'JSON Schema Validation error');
-      error.errors = result.errors;
+    .then(() => {
+      const result = tv4.validateMultiple(data, schema);
+      if (result.missing.length > 0) {
+        // Missing Schemas
+        return Promise.all(result.missing.map((schemaID) => {
+          if (tv4.getSchema(schemaID)) {
+            throw new Error('json-schema-remote: tv4 is missing schema it already has in cache. possible faulty schema.');
+          }
+          return loadSchema(schemaID)
+            .then(loadedSchema => tv4.addSchema(schemaID, loadedSchema));
+        }))
+          .then(() => tv4Validate(data, schema));
+      } else if (result.errors.length > 0) { // Invalid
+        const error = new Error(schema === schemaSchema.id ? 'No valid JSON Schema' : 'JSON Schema Validation error');
+        error.errors = result.errors;
+        return Promise.reject(error);
+      }
+      // Valid
+      return true;
+    })
+    .then((isValid) => {
+      if (callback) {
+        return callback(null, isValid);
+      }
+      return isValid;
+    })
+    .catch((error) => {
+      if (callback) {
+        return callback(error, false);
+      }
       return Promise.reject(error);
-    }
-    // Valid
-    return true;
-  })
-  .then((isValid) => {
-    if (callback) {
-      return callback(null, isValid);
-    }
-    return isValid;
-  })
-  .catch((error) => {
-    if (callback) {
-      return callback(error, false);
-    }
-    return Promise.reject(error);
-  });
+    });
 }
 
 /**
@@ -230,19 +228,19 @@ function tv4Validate(data, schema, callback) {
  */
 function validate(dataOrURL, schemaOrURL, callback) {
   return Promise.all([loadData(dataOrURL), loadSchema(schemaOrURL)])
-  .then(loaded => tv4Validate(loaded[0], loaded[1]))
-  .then((isValid) => {
-    if (callback) {
-      return callback(null, isValid);
-    }
-    return isValid;
-  })
-  .catch((error) => {
-    if (callback) {
-      return callback(error, false);
-    }
-    return Promise.reject(error);
-  });
+    .then(loaded => tv4Validate(loaded[0], loaded[1]))
+    .then((isValid) => {
+      if (callback) {
+        return callback(null, isValid);
+      }
+      return isValid;
+    })
+    .catch((error) => {
+      if (callback) {
+        return callback(error, false);
+      }
+      return Promise.reject(error);
+    });
 }
 
 module.exports = {
