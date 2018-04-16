@@ -92,6 +92,9 @@ Note that the tests need internet access for testing download of remote schemas.
 
 ## Changelog
 
+### 1.3.7
+- readd meta schema on dropSchemas
+
 ### 1.3.6
 - use packaged schema for metaSchema validation, should fix Mixed-Content warnings
 
