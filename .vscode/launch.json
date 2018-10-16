@@ -12,7 +12,7 @@
       "stopOnEntry": false,
       "args": [
         "-t",
-        "10000",
+        "100000",
         "-R",
         "dot",
         "--exit",

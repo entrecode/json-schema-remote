@@ -9,7 +9,7 @@
     "url": "https://entrecode.de"
   },
   "scripts": {
-    "test": "mocha -R spec",
+    "test": "mocha -R spec --exit --timeout 5000",
     "build": "webpack json-schema-remote.js dist/json-schema-remote.js --output-library-target umd --output-library validator"
   },
   "repository": "entrecode/json-schema-remote",
