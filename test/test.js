@@ -2,7 +2,7 @@
 
 const chai = require('chai');
 
-const expect = chai.expect;
+const { expect } = chai;
 const localPackageJsonSchema = require('../schema/package.json');
 const validator = require('../');
 
@@ -86,7 +86,7 @@ describe('promise style', () => {
   describe('remote schema and local data', () => {
     it('valid data', () => {
       const data = { latitude: 48.778611, longitude: 9.179749 };
-      const schema = 'http://json-schema.org/geo';
+      const schema = 'https://entrecode.de/schema/geo';
       return validator.validate(data, schema)
         .then((isValid) => {
           expect(isValid).to.be.true;
@@ -94,7 +94,7 @@ describe('promise style', () => {
     });
     it('invalid data', () => {
       const data = { latitude: 48.778611, longitude: '9.179749' };
-      const schema = 'http://json-schema.org/geo';
+      const schema = 'https://entrecode.de/schema/geo';
       return validator.validate(data, schema)
         .then((isValid) => {
           expect(isValid).to.not.be.true;
@@ -104,7 +104,7 @@ describe('promise style', () => {
           return Promise.resolve();
         });
     });
-    it('remote schema with remote $refs', () => {
+    it.skip('remote schema with remote $refs', () => {
       const data = {
         collection: {
           version: '1.0',
@@ -258,7 +258,7 @@ describe('promise style', () => {
         });
     });
     it('invalid data', () => {
-      const data = 'http://hyperschema.org/mediatypes/hal';
+      const data = 'https://entrecode.de/schema/hal';
       const schema = localPackageJsonSchema;
       return validator.validate(data, schema)
         .then((isValid) => {
@@ -293,8 +293,8 @@ describe('promise style', () => {
           expect(results[1]).to.be.true;
         });
     });
-    it('invalid data', () => {
-      const data = 'http://hyperschema.org/mediatypes/hal';
+    it.skip('invalid data', () => {
+      const data = 'https://entrecode.de/schema/hal';
       const schema = 'http://json.schemastore.org/package';
       return validator.validate(data, schema)
         .then((isValid) => {
@@ -363,7 +363,7 @@ describe('promise style', () => {
 });
 
 after(() => {
-  // this is not idea, should be a proper test but it must run as last test
+  // this is not ideal, should be a proper test but it must run as last test
   validator.preload({
     $schema: 'http://json-schema.org/draft-04/schema#',
     id: 'https://nonexistent.tld/some/schema',
@@ -413,7 +413,7 @@ describe('callback style', () => {
   describe('remote schema and local data', () => {
     it('valid data', (done) => {
       const data = { latitude: 48.778611, longitude: 9.179749 };
-      const schema = 'http://json-schema.org/geo';
+      const schema = 'https://entrecode.de/schema/geo';
       validator.validate(data, schema, (error, isValid) => {
         if (error) {
           done(error);
@@ -424,14 +424,14 @@ describe('callback style', () => {
     });
     it('invalid data', (done) => {
       const data = { latitude: 48.778611, longitude: '9.179749' };
-      const schema = 'http://json-schema.org/geo';
+      const schema = 'https://entrecode.de/schema/geo';
       validator.validate(data, schema, (error, isValid) => {
         expect(isValid).to.not.be.true;
         expect(error).to.have.nested.property('errors.0.message', 'Invalid type: string (expected number)');
         done();
       });
     });
-    it('remote schema with remote $refs', (done) => {
+    it.skip('remote schema with remote $refs', (done) => {
       const data = {
         collection: {
           version: '1.0',
@@ -591,7 +591,7 @@ describe('callback style', () => {
       });
     });
     it('invalid data', (done) => {
-      const data = 'http://hyperschema.org/mediatypes/hal';
+      const data = 'https://entrecode.de/schema/hal';
       const schema = localPackageJsonSchema;
       validator.validate(data, schema, (error, isValid) => {
         expect(isValid).to.not.be.true;
@@ -613,7 +613,7 @@ describe('callback style', () => {
         done();
       });
     });
-    it('invalid data', (done) => {
+    it.skip('invalid data', (done) => {
       const data = 'http://hyperschema.org/mediatypes/hal';
       const schema = 'http://json.schemastore.org/package';
       validator.validate(data, schema, (error, isValid) => {
