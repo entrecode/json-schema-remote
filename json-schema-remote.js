@@ -59,8 +59,9 @@ function makeRequest(url) {
       log('downloading from ', url, '\n');
 
       const req = superagent.get(url);
-      const isBrowser = typeof process === 'undefined' || typeof process.browser !== 'undefined';
-      if (isBrowser) {
+      const isNode = module && !!module.exports && !(typeof navigator !== 'undefined' && navigator.product === 'ReactNative');
+      // const isBrowser = typeof process === 'undefined' || typeof process.browser !== 'undefined';
+      if (!isNode) {
         return req.then((res) => {
           if (res.body) {
             return res.body;
