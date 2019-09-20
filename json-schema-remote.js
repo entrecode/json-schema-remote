@@ -51,43 +51,45 @@ function getSchema(url) {
 }
 
 function makeRequest(url) {
-  return Promise.resolve()
-    .then(() => {
-      if (requestCache.has(url)) {
-        return requestCache.get(url);
-      }
-      log('downloading from ', url, '\n');
+  return Promise.resolve().then(() => {
+    if (requestCache.has(url)) {
+      return requestCache.get(url);
+    }
+    log('downloading from ', url, '\n');
 
-      const req = superagent.get(url);
-      const isNode = module && !!module.exports && !(typeof navigator !== 'undefined' && navigator.product === 'ReactNative');
-      // const isBrowser = typeof process === 'undefined' || typeof process.browser !== 'undefined';
-      if (!isNode) {
-        return req.then((res) => {
-          if (res.body) {
-            return res.body;
-          }
-          return JSON.parse(res.text);
-        });
-      }
-      // This buffer(…) logic should parse all content types as json. Or fail violently.
-      const promise = req.buffer(true).parse(superagent.parse.image)
-        .then((res) => {
-          try {
-            return JSON.parse(res.body.toString());
-          } catch (err) {
-            return res.body;
-          }
-        })
-        .then((res) => {
-          if (requestCache.has(url)) {
-            requestCache.delete(url);
-          }
-          return res;
-        });
+    const req = superagent.get(url);
+    const isNode =
+      module && !!module.exports && !(typeof navigator !== 'undefined' && navigator.product === 'ReactNative');
+    // const isBrowser = typeof process === 'undefined' || typeof process.browser !== 'undefined';
+    if (!isNode) {
+      return req.then((res) => {
+        if (res.body) {
+          return res.body;
+        }
+        return JSON.parse(res.text);
+      });
+    }
+    // This buffer(…) logic should parse all content types as json. Or fail violently.
+    const promise = req
+      .buffer(true)
+      .parse(superagent.parse.image)
+      .then((res) => {
+        try {
+          return JSON.parse(res.body.toString());
+        } catch (err) {
+          return res.body;
+        }
+      })
+      .then((res) => {
+        if (requestCache.has(url)) {
+          requestCache.delete(url);
+        }
+        return res;
+      });
 
-      requestCache.set(url, promise);
-      return promise;
-    });
+    requestCache.set(url, promise);
+    return promise;
+  });
 }
 
 /**
@@ -102,7 +104,11 @@ function loadData(data, callback) {
       if (isString(data) && validatorJS.isURL(data, { require_tld: tld })) {
         return makeRequest(data)
           .catch((error) => {
-            if (error.hasOwnProperty('response') && error.response.statusCode !== 200) {
+            if (
+              error.hasOwnProperty('response') &&
+              error.hasOwnProperty('statusCode') &&
+              error.response.statusCode !== 200
+            ) {
               return Promise.reject(new Error('Could not load remote data.'));
             }
             return Promise.reject(error);
@@ -146,21 +152,22 @@ function loadSchema(schema, callback) {
         }
         return makeRequest(schema)
           .catch((error) => {
-            if (error.hasOwnProperty('response') && error.response.statusCode !== 200) {
+            if (
+              error.hasOwnProperty('response') &&
+              error.hasOwnProperty('statusCode') &&
+              error.response.statusCode !== 200
+            ) {
               return Promise.reject(new Error('Could not load schema.'));
             }
             return Promise.reject(error);
           })
-          .then(parsedBody =>
-            tv4Validate(parsedBody, schemaSchema)
-              .then(() => parsedBody));
+          .then((parsedBody) => tv4Validate(parsedBody, schemaSchema).then(() => parsedBody));
       }
       if (!isObject(schema)) {
         return Promise.reject(new Error('No valid JSON Schema'));
       }
       // check if valid schema
-      return tv4Validate(schema, schemaSchema)
-        .then(() => schema);
+      return tv4Validate(schema, schemaSchema).then(() => schema);
     })
     .then((result) => {
       tv4.addSchema(result.id, result);
@@ -190,15 +197,18 @@ function tv4Validate(data, schema, callback) {
       const result = tv4.validateMultiple(data, schema);
       if (result.missing.length > 0) {
         // Missing Schemas
-        return Promise.all(result.missing.map((schemaID) => {
-          if (tv4.getSchema(schemaID)) {
-            throw new Error('json-schema-remote: tv4 is missing schema it already has in cache. possible faulty schema.');
-          }
-          return loadSchema(schemaID)
-            .then(loadedSchema => tv4.addSchema(schemaID, loadedSchema));
-        }))
-          .then(() => tv4Validate(data, schema));
-      } else if (result.errors.length > 0) { // Invalid
+        return Promise.all(
+          result.missing.map((schemaID) => {
+            if (tv4.getSchema(schemaID)) {
+              throw new Error(
+                'json-schema-remote: tv4 is missing schema it already has in cache. possible faulty schema.',
+              );
+            }
+            return loadSchema(schemaID).then((loadedSchema) => tv4.addSchema(schemaID, loadedSchema));
+          }),
+        ).then(() => tv4Validate(data, schema));
+      } else if (result.errors.length > 0) {
+        // Invalid
         const error = new Error(schema === schemaSchema.id ? 'No valid JSON Schema' : 'JSON Schema Validation error');
         error.errors = result.errors;
         return Promise.reject(error);
@@ -230,7 +240,7 @@ function tv4Validate(data, schema, callback) {
  */
 function validate(dataOrURL, schemaOrURL, callback) {
   return Promise.all([loadData(dataOrURL), loadSchema(schemaOrURL)])
-    .then(loaded => tv4Validate(loaded[0], loaded[1]))
+    .then((loaded) => tv4Validate(loaded[0], loaded[1]))
     .then((isValid) => {
       if (callback) {
         return callback(null, isValid);
