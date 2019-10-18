@@ -70,10 +70,9 @@ function makeRequest(url) {
       });
     }
     const promise = req
-      .parse(superagent.parse.image)
       .then((res) => {
         try {
-          return JSON.parse(res.body.toString());
+          return JSON.parse(res.text);
         } catch (err) {
           return res.body;
         }
