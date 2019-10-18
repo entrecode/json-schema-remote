@@ -69,9 +69,7 @@ function makeRequest(url) {
         return JSON.parse(res.text);
       });
     }
-    // This buffer(…) logic should parse all content types as json. Or fail violently.
     const promise = req
-      .buffer(true)
       .parse(superagent.parse.image)
       .then((res) => {
         try {
