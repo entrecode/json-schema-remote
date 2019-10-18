@@ -198,11 +198,11 @@ function tv4Validate(data, schema, callback) {
           result.missing.map((schemaID) => {
             if (tv4.getSchema(schemaID)) {
               throw new Error(
-                'json-schema-remote: tv4 is missing schema it already has in cache. possible faulty schema.',
+                'json-schema-remote: tv4 is missing schema it already has in cache. possible faulty schema.'
               );
             }
             return loadSchema(schemaID).then((loadedSchema) => tv4.addSchema(schemaID, loadedSchema));
-          }),
+          })
         ).then(() => tv4Validate(data, schema));
       } else if (result.errors.length > 0) {
         // Invalid
