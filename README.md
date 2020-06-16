@@ -92,6 +92,9 @@ Note that the tests need internet access for testing download of remote schemas.
 
 ## Changelog
 
+### 1.5.1
+- adds new webpack build
+
 ### 1.5.0
 - patchday with new version of validator
 
