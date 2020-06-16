@@ -92,6 +92,9 @@ Note that the tests need internet access for testing download of remote schemas.
 
 ## Changelog
 
+### 1.5.0
+- patchday with new version of validator
+
 ### 1.3.7
 - readd meta schema on dropSchemas
 
