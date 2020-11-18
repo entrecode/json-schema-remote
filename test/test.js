@@ -81,7 +81,7 @@ describe('promise style', () => {
           expect(isValid).to.be.true;
         });
     });
-    it.only('19.99', () => {
+    it('19.99', () => {
       const data = 19.99;
       const schema = { type: 'number', multipleOf: 0.01 };
 
