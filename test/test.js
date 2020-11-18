@@ -81,6 +81,15 @@ describe('promise style', () => {
           expect(isValid).to.be.true;
         });
     });
+    it('19.99', () => {
+      const data = 19.99;
+      const schema = { type: 'number', multipleOf: 0.01 };
+
+      return validator.validate(data, schema)
+        .then((isValid) => {
+          expect(isValid).to.be.true;
+        });
+    });
   });
 
   describe('remote schema and local data', () => {
