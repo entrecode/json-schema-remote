@@ -1,18 +1,18 @@
 {
   "name": "json-schema-remote",
-  "version": "1.6.2",
+  "version": "1.7.0",
   "description": "Node.js module to validate JSON objects against a JSON Schema, including remote references ($ref)",
   "homepage": "https://github.com/entrecode/json-schema-remote",
+  "bugs": "https://github.com/entrecode/json-schema-remote/issues",
   "author": {
     "name": "Ruben Deyhle",
     "email": "deyhle@entrecode.de",
     "url": "https://entrecode.de"
   },
-  "scripts": {
-    "test": "mocha -R spec --exit --timeout 5000",
-    "build": "webpack json-schema-remote.js dist/json-schema-remote.js --output-library-target umd --output-library validator"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/entrecode/json-schema-remote.git"
   },
-  "repository": "entrecode/json-schema-remote",
   "license": "MIT",
   "keywords": [
     "json-schema-remote",
@@ -24,22 +24,29 @@
     "validator"
   ],
   "main": "json-schema-remote.js",
-  "typings": "json-schema-remote.d.ts",
-  "dependencies": {
-    "lodash.isobject": "^3.0.2",
-    "lodash.isstring": "^4.0.1",
-    "superagent": "^7.1.3",
-    "tv4": "https://github.com/entrecode/tv4.git#264379bd5d8ea18c9666570f12d32791d864104a",
-    "tv4-formats": "^3.0.3",
-    "validator": "^13.1.1"
-  },
-  "devDependencies": {
-    "chai": "^4.2.0",
-    "mocha": "^8.0.1",
-    "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.11"
-  },
+  "types": "json-schema-remote.d.ts",
   "bin": {
-    "json-schema-remote": "./bin/json-schema-remote.js"
+    "json-schema-remote": "bin/json-schema-remote.js"
+  },
+  "files": [
+    "json-schema-remote.js",
+    "json-schema-remote.d.ts",
+    "lib/",
+    "schema/schema.json",
+    "bin/",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=14.18.0"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "test:types": "npx --yes -p typescript@5 tsc -p test/types",
+    "prepublishOnly": "npm test"
+  },
+  "dependencies": {
+    "superagent": "^10.4.1",
+    "tv4-formats": "^3.0.6",
+    "validator": "^13.15.35"
   }
 }

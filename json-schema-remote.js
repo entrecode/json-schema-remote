@@ -1,23 +1,67 @@
-const tv4 = require('tv4');
 const tv4formats = require('tv4-formats');
 const validatorJS = require('validator');
 const superagent = require('superagent');
+const tv4 = require('./lib/tv4');
 const schemaSchema = require('./schema/schema.json');
-const isString = require('lodash.isstring');
-const isObject = require('lodash.isobject');
 
 tv4.addFormat(tv4formats);
 tv4.addSchema(schemaSchema);
 
 let log = console.log;
 
+let requestOptions = {
+  timeout: { response: 10000, deadline: 30000 },
+  retries: 2,
+};
+
+// Holds only requests which are in flight, so parallel loads of the same URL share one download.
+// Settled requests (successful or failed) are removed, loaded schemas are cached by tv4.
 const requestCache = new Map();
+
+function isString(value) {
+  return typeof value === 'string' || value instanceof String;
+}
+
+function isObject(value) {
+  return value !== null && (typeof value === 'object' || typeof value === 'function');
+}
+
+function isURL(value) {
+  return isString(value) && validatorJS.isURL(value, { require_tld: value.indexOf('localhost') === -1 });
+}
 
 function setLoggingFunction(fn) {
   if (typeof fn !== 'function') {
     throw new Error('logging function is no function!');
   }
   log = fn;
+}
+
+/**
+ * Configure how remote schemas and data are requested.
+ * @param {object} options
+ * @param {number|object} [options.timeout] Timeout per attempt in ms, or `{ response, deadline }` in ms. 0 disables.
+ * @param {number} [options.retries] Number of retries on network errors, timeouts and 5xx responses.
+ */
+function setRequestOptions(options) {
+  if (!isObject(options)) {
+    throw new Error('request options must be an object');
+  }
+  const next = { ...requestOptions };
+  if ('timeout' in options) {
+    const { timeout } = options;
+    if (!(typeof timeout === 'number' && timeout >= 0) && !isObject(timeout)) {
+      throw new Error('timeout must be a non-negative number or an object with response and/or deadline');
+    }
+    next.timeout = timeout;
+  }
+  if ('retries' in options) {
+    if (!Number.isInteger(options.retries) || options.retries < 0) {
+      throw new Error('retries must be a non-negative integer');
+    }
+    next.retries = options.retries;
+  }
+  requestOptions = next;
 }
 
 /**
@@ -50,6 +94,14 @@ function getSchema(url) {
   return tv4.getSchema(url);
 }
 
+function parseBody(res) {
+  try {
+    return JSON.parse(res.text);
+  } catch (err) {
+    return res.body;
+  }
+}
+
 function makeRequest(url) {
   return Promise.resolve().then(() => {
     if (requestCache.has(url)) {
@@ -57,36 +109,37 @@ function makeRequest(url) {
     }
     log('downloading from ', url, '\n');
 
-    const req = superagent.get(url);
-    const isNode =
-      module && !!module.exports && !(typeof navigator !== 'undefined' && navigator.product === 'ReactNative');
-    // const isBrowser = typeof process === 'undefined' || typeof process.browser !== 'undefined';
-    if (!isNode) {
-      return req.then((res) => {
-        if (res.body) {
-          return res.body;
-        }
-        return JSON.parse(res.text);
-      });
-    }
-    const promise = req
-      .then((res) => {
-        try {
-          return JSON.parse(res.text);
-        } catch (err) {
-          return res.body;
-        }
-      })
-      .then((res) => {
-        if (requestCache.has(url)) {
+    const promise = superagent
+      .get(url)
+      .timeout(requestOptions.timeout)
+      .retry(requestOptions.retries)
+      .then(parseBody)
+      .finally(() => {
+        if (requestCache.get(url) === promise) {
           requestCache.delete(url);
         }
-        return res;
       });
 
     requestCache.set(url, promise);
     return promise;
   });
+}
+
+/**
+ * Wraps a failed request in an error which names the URL. Keeps code (e.g. ENETUNREACH) and HTTP status.
+ */
+function requestError(error, message, url) {
+  const status = error.status || (error.response && error.response.status);
+  const wrapped = new Error(`${message} from ${url}: ${status ? `HTTP ${status}` : error.message}`);
+  wrapped.url = url;
+  wrapped.cause = error;
+  if (status) {
+    wrapped.status = status;
+  }
+  if (error.code) {
+    wrapped.code = error.code;
+  }
+  return wrapped;
 }
 
 /**
@@ -97,19 +150,9 @@ function makeRequest(url) {
 function loadData(data, callback) {
   return Promise.resolve()
     .then(() => {
-      const tld = !isString(data) || data.indexOf('localhost') === -1;
-      if (isString(data) && validatorJS.isURL(data, { require_tld: tld })) {
+      if (isURL(data)) {
         return makeRequest(data)
-          .catch((error) => {
-            if (
-              error.hasOwnProperty('response') &&
-              error.hasOwnProperty('statusCode') &&
-              error.response.statusCode !== 200
-            ) {
-              return Promise.reject(new Error('Could not load remote data.'));
-            }
-            return Promise.reject(error);
-          })
+          .catch((error) => Promise.reject(requestError(error, 'Could not load remote data', data)))
           .then((body) => {
             if (!isObject(body)) {
               return Promise.reject(new Error('No valid JSON Object'));
@@ -141,23 +184,13 @@ function loadData(data, callback) {
 function loadSchema(schema, callback) {
   return Promise.resolve()
     .then(() => {
-      const tld = !isString(schema) || schema.indexOf('localhost') === -1;
-      if (isString(schema) && validatorJS.isURL(schema, { require_tld: tld })) {
+      if (isURL(schema)) {
         const cachedSchema = tv4.getSchema(schema);
         if (cachedSchema) {
           return cachedSchema;
         }
         return makeRequest(schema)
-          .catch((error) => {
-            if (
-              error.hasOwnProperty('response') &&
-              error.hasOwnProperty('statusCode') &&
-              error.response.statusCode !== 200
-            ) {
-              return Promise.reject(new Error('Could not load schema.'));
-            }
-            return Promise.reject(error);
-          })
+          .catch((error) => Promise.reject(requestError(error, 'Could not load schema', schema)))
           .then((parsedBody) => tv4Validate(parsedBody, schemaSchema).then(() => parsedBody));
       }
       if (!isObject(schema)) {
@@ -183,7 +216,7 @@ function loadSchema(schema, callback) {
 }
 
 /**
- * recursively validates against JSON schema. Loads missing $rel´s
+ * recursively validates against JSON schema. Loads missing $ref´s
  * @param {object}    data      JSON object to check
  * @param {object}    schema    JSON schema to check against
  * @param {function}  [callback]  called with (error, result)
@@ -206,7 +239,8 @@ function tv4Validate(data, schema, callback) {
         ).then(() => tv4Validate(data, schema));
       } else if (result.errors.length > 0) {
         // Invalid
-        const error = new Error(schema === schemaSchema.id ? 'No valid JSON Schema' : 'JSON Schema Validation error');
+        const isSchemaCheck = schema === schemaSchema || schema === schemaSchema.id;
+        const error = new Error(isSchemaCheck ? 'No valid JSON Schema' : 'JSON Schema Validation error');
         error.errors = result.errors;
         return Promise.reject(error);
       }
@@ -258,6 +292,7 @@ module.exports = {
   dropSchemas,
   getSchema,
   setLoggingFunction,
+  setRequestOptions,
 
   loadData,
   loadSchema,

@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es2020",
+    "types": [],
+    "baseUrl": ".",
+    "paths": {
+      "json-schema-remote": ["../../json-schema-remote.d.ts"]
+    }
+  },
+  "files": ["index.ts"]
+}
